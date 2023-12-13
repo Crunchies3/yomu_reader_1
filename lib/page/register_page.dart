@@ -121,7 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Text(
                       "Already have an account?",
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.inversePrimary),
+                          color: Theme.of(context).colorScheme.secondary),
                     ),
                     GestureDetector(
                       onTap: () {},

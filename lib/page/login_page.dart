@@ -120,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                     Text(
                       "Don't have an account?",
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.inversePrimary),
+                          color: Theme.of(context).colorScheme.secondary),
                     ),
                     GestureDetector(
                       onTap: () {},
