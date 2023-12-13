@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "80829217331",
+    "project_id": "yomu-reader",
+    "storage_bucket": "yomu-reader.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80829217331:android:c3fc53ddc443d6a2320146",
+        "android_client_info": {
+          "package_name": "com.example.yomu_reader_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPF07lRHIu3pUDFrVl-5rV0sTZl8g0a48"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
