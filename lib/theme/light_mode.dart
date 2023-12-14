@@ -8,8 +8,11 @@ ThemeData lightMode = ThemeData(
     secondary: Colors.grey[900]!,
     inversePrimary: Colors.grey[900]!,
   ),
-  textTheme: ThemeData.light().textTheme.apply(
-      bodyColor: Colors.grey[700],
-      displayColor: Colors.black
-  ),
 );
+
+int hexColor(String color) {
+  String newColor = '0xff' + color;
+  newColor = newColor.replaceAll('#', '');
+  int finalColor = int.parse(newColor);
+  return finalColor;
+}
