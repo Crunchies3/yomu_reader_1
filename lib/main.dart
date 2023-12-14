@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:yomu_reader_1/page/auth_page.dart';
-import 'package:yomu_reader_1/page/login_page.dart';
-import 'package:yomu_reader_1/page/register_page.dart';
 import 'package:yomu_reader_1/theme/dark_mode.dart';
 import 'package:yomu_reader_1/theme/light_mode.dart';
 import 'firebase_options.dart';

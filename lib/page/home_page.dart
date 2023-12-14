@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   int currentPageIndex = 0;
   Widget currentPage = LibraryPage();
   Widget currentAppbar = LibraryAppbar();
+  double currAppbarSize = 60.0;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(60.0), // here the desired height
+          preferredSize: Size.fromHeight(currAppbarSize), // here the desired height
           child: currentAppbar,
         ),
         body: currentPage,
@@ -46,18 +47,22 @@ class _HomePageState extends State<HomePage> {
                   case 0:
                     currentPage = LibraryPage();
                     currentAppbar = LibraryAppbar();
+                    currAppbarSize = 60.0;
                     break;
                   case 1:
                     currentPage = UpdatesPage();
                     currentAppbar = UpdatesPageAppbar();
+                    currAppbarSize = 60.0;
                     break;
                   case 2:
                     currentPage = HistoryPage();
                     currentAppbar = HistoryPageAppbar();
+                    currAppbarSize = 60.0;
                     break;
                   case 3:
                     currentPage = BrowsePage();
                     currentAppbar = BrowsePageAppbar();
+                    currAppbarSize = 120.0;
                     break;
                   case 4: currentPage = MorePage();
                   currentAppbar = AppBar();

@@ -8,7 +8,7 @@ class HistoryPage extends StatelessWidget {
   }
 }
 
-class HistoryPageAppbar extends StatelessWidget {
+class HistoryPageAppbar extends StatelessWidget implements PreferredSize{
   const HistoryPageAppbar({super.key});
 
   @override
@@ -18,5 +18,12 @@ class HistoryPageAppbar extends StatelessWidget {
       title: Text("History"),
     );
   }
+
+  @override
+  // TODO: implement child
+  Widget get child => throw UnimplementedError();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(100);
 }
 

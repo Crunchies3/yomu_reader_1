@@ -16,6 +16,24 @@ class BrowsePageAppbar extends StatelessWidget {
     return AppBar(
       backgroundColor: Theme.of(context).colorScheme.primary,
       title: Text("Browse"),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: Container(
+          height: 60,
+          color: Theme.of(context).colorScheme.primary,
+          child: Center(
+            child: Row(
+              children: [
+
+              ],
+            )
+          ),
+        ),
+      ),
+      actions: [
+        IconButton(onPressed: (){}, icon: Icon(Icons.search)),
+        IconButton(onPressed: (){}, icon: Icon(Icons.grid_view_sharp)),
+      ],
     );
   }
 }
