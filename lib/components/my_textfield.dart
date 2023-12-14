@@ -15,12 +15,18 @@ class MyTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      cursorColor: Theme.of(context).colorScheme.inversePrimary,
+      cursorWidth: 1,
       decoration: InputDecoration(
+        contentPadding: EdgeInsets.all(10.0),
         filled: true,
-        fillColor: Colors.grey[200],
+        fillColor: Theme.of(context).colorScheme.secondary,
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.background),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
           borderRadius: BorderRadius.circular(9)
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(9),

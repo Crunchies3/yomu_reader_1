@@ -124,15 +124,12 @@ class _RegisterPageState extends State<RegisterPage> {
                           color: Theme.of(context).colorScheme.secondary),
                     ),
                     GestureDetector(
-                      onTap: () {},
-                      child: GestureDetector(
-                        onTap: widget.onTap,
-                        child: const Text(
-                          " Login Now!",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.deepOrange,
-                          ),
+                      onTap: widget.onTap,
+                      child: const Text(
+                        " Login Now!",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepOrange,
                         ),
                       ),
                     )

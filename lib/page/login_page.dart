@@ -67,75 +67,110 @@ class _LoginPageState extends State<LoginPage> {
                   color: Theme.of(context).colorScheme.inversePrimary,
                 ),
 
-                const SizedBox(height: 25),
-                // app name
-                const Text(
-                  "Yomu Reader",
-                  style: TextStyle(fontSize: 20),
-                ),
+                const SizedBox(height: 30),
 
-                const SizedBox(height: 25),
-
-                // email textfield
-                MyTextField(
-                  hintText: "Email",
-                  obscureText: false,
-                  controller: emailController,
-                ),
-
-                const SizedBox(height: 10),
-                // password textfield
-                MyTextField(
-                  hintText: "Password",
-                  obscureText: true,
-                  controller: passwordController,
-                ),
-
-                const SizedBox(height: 25),
-
-                // forgot password
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      "Forgot Password?",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 25),
-
-                // sign in button
-
-                MyButton(text: "Login", onTap: login),
-
-                // dont have an account? register here
-                const SizedBox(height: 25),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don't have an account?",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                    GestureDetector(
-                      onTap: () {},
-                      child: GestureDetector(
-                        onTap: widget.onTap,
-                        child: const Text(
-                          " Register Here!",
+                Container(
+                  color: Theme.of(context).colorScheme.primary,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 15),
+                        Text(
+                            "Sign in to your account",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.deepOrange,
+                            fontSize: 20
                           ),
                         ),
-                      ),
-                    )
-                  ],
+                        const SizedBox(height: 40),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Email",
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.inversePrimary,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        // email textfield
+
+                        MyTextField(
+                          hintText: "",
+                          obscureText: false,
+                          controller: emailController,
+                        ),
+
+                        const SizedBox(height: 15),
+                        // password textfield
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Password",
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.inversePrimary,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        MyTextField(
+                          hintText: "",
+                          obscureText: true,
+                          controller: passwordController,
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        // forgot password
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              "Forgot Password?",
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 30),
+
+                        // sign in button
+
+                        MyButton(text: "Sign In", onTap: login),
+
+                        // dont have an account? register here
+                        const SizedBox(height: 25),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Don't have an account?",
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.inversePrimary),
+                            ),
+                            GestureDetector(
+                              onTap: widget.onTap,
+                              child: Text(
+                                " Register Here!",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.tertiary
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 15),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
