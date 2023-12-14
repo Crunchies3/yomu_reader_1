@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
-      showErrorMessage(e.code);
+      showErrorMessage("Invalid email or password");
     }
   }
 
@@ -43,7 +43,12 @@ class _LoginPageState extends State<LoginPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(message),
+          backgroundColor: Theme.of(context).colorScheme.background,
+          title: Text(message,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.tertiary,
+                fontSize: 18
+              )),
         );
       },
     );
@@ -77,11 +82,9 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         const SizedBox(height: 15),
                         Text(
-                            "Sign in to your account",
+                          "Sign in to your account",
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20
-                          ),
+                              fontWeight: FontWeight.bold, fontSize: 20),
                         ),
                         const SizedBox(height: 40),
                         Row(
@@ -90,7 +93,9 @@ class _LoginPageState extends State<LoginPage> {
                             Text(
                               "Email",
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.inversePrimary,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -112,7 +117,9 @@ class _LoginPageState extends State<LoginPage> {
                             Text(
                               "Password",
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.inversePrimary,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -153,16 +160,18 @@ class _LoginPageState extends State<LoginPage> {
                             Text(
                               "Don't have an account?",
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.inversePrimary),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary),
                             ),
                             GestureDetector(
                               onTap: widget.onTap,
                               child: Text(
                                 " Register Here!",
                                 style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.tertiary
-                                ),
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary),
                               ),
                             )
                           ],
