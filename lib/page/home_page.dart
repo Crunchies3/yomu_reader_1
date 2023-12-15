@@ -25,61 +25,58 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(currAppbarSize), // here the desired height
-            child: currentAppbar,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(currAppbarSize), // here the desired height
+          child: currentAppbar,
+        ),
+        body: currentPage,
+        bottomNavigationBar: NavigationBarTheme(
+          data: NavigationBarThemeData(
+              indicatorColor: Theme.of(context).colorScheme.tertiary,
+              labelTextStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14,))
           ),
-          body: currentPage,
-          bottomNavigationBar: NavigationBarTheme(
-            data: NavigationBarThemeData(
-                indicatorColor: Theme.of(context).colorScheme.tertiary,
-                labelTextStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14,))
-            ),
-            child: NavigationBar(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              onDestinationSelected: (int index){
-                setState(() {
-                  currentPageIndex = index;
+          child: NavigationBar(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            onDestinationSelected: (int index){
+              setState(() {
+                currentPageIndex = index;
 
-                  switch (index) {
-                    case 0:
-                      currentPage = const LibraryPage();
-                      currentAppbar = const LibraryAppbar();
-                      currAppbarSize = 60.0;
-                      break;
-                    case 1:
-                      currentPage = const UpdatesPage();
-                      currentAppbar = const UpdatesPageAppbar();
-                      currAppbarSize = 60.0;
-                      break;
-                    case 2:
-                      currentPage = const HistoryPage();
-                      currentAppbar = const HistoryPageAppbar();
-                      currAppbarSize = 60.0;
-                      break;
-                    case 3:
-                      currentPage = const BrowsePage();
-                      currentAppbar = const BrowsePageAppbar();
-                      currAppbarSize = 60.0;
-                      break;
-                    case 4: currentPage = const MorePage();
-                    currentAppbar = AppBar();
-                  }
-                });
-              },
-              selectedIndex: currentPageIndex,
-              destinations: [
-                NavigationDestination(icon: Icon(color: Theme.of(context).colorScheme.inversePrimary,Icons.book), label: "library"),
-                NavigationDestination(icon: Icon(color: Theme.of(context).colorScheme.inversePrimary,Icons.notifications_active_sharp), label: "Updates"),
-                NavigationDestination(icon: Icon(color: Theme.of(context).colorScheme.inversePrimary,Icons.history), label: "History"),
-                NavigationDestination(icon: Icon(color: Theme.of(context).colorScheme.inversePrimary,Icons.explore), label: "Browse"),
-                NavigationDestination(icon: Icon(color: Theme.of(context).colorScheme.inversePrimary,Icons.more_horiz), label: "More"),
-              ],
-            ),
+                switch (index) {
+                  case 0:
+                    currentPage = const LibraryPage();
+                    currentAppbar = const LibraryAppbar();
+                    currAppbarSize = 60.0;
+                    break;
+                  case 1:
+                    currentPage = const UpdatesPage();
+                    currentAppbar = const UpdatesPageAppbar();
+                    currAppbarSize = 60.0;
+                    break;
+                  case 2:
+                    currentPage = const HistoryPage();
+                    currentAppbar = const HistoryPageAppbar();
+                    currAppbarSize = 60.0;
+                    break;
+                  case 3:
+                    currentPage = const BrowsePage();
+                    currentAppbar = const BrowsePageAppbar();
+                    currAppbarSize = 60.0;
+                    break;
+                  case 4: currentPage = const MorePage();
+                  currentAppbar = AppBar();
+                }
+              });
+            },
+            selectedIndex: currentPageIndex,
+            destinations: [
+              NavigationDestination(icon: Icon(color: Theme.of(context).colorScheme.inversePrimary,Icons.book), label: "library"),
+              NavigationDestination(icon: Icon(color: Theme.of(context).colorScheme.inversePrimary,Icons.notifications_active_sharp), label: "Updates"),
+              NavigationDestination(icon: Icon(color: Theme.of(context).colorScheme.inversePrimary,Icons.history), label: "History"),
+              NavigationDestination(icon: Icon(color: Theme.of(context).colorScheme.inversePrimary,Icons.explore), label: "Browse"),
+              NavigationDestination(icon: Icon(color: Theme.of(context).colorScheme.inversePrimary,Icons.more_horiz), label: "More"),
+            ],
           ),
         ),
       ),
