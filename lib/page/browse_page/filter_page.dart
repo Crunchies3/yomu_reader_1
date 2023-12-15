@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 class FilterPage extends StatelessWidget {
-  const FilterPage({super.key});
+  final List<dynamic> mangaId;
+  const FilterPage({super.key, required this.mangaId});
 
   @override
   Widget build(BuildContext context) {
