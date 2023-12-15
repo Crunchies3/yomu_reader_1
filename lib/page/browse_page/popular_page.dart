@@ -21,7 +21,8 @@ class PopularPage extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    color: Colors.red,
+                    height: 300,
+                    color: Theme.of(context).colorScheme.inversePrimary,
                     child: const Image(
                       fit: BoxFit.contain,
                       image: AssetImage("asset/image/one_piece.jpg"),
