@@ -19,8 +19,8 @@ class BrowsePage extends StatelessWidget {
                 Tab(
                   child: Row(
                     children: [
-                      Icon(Icons.favorite),
-                      SizedBox(
+                      const Icon(Icons.favorite),
+                      const SizedBox(
                         width: 5,
                       ),
                       Text(
@@ -35,8 +35,8 @@ class BrowsePage extends StatelessWidget {
                 Tab(
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline),
-                      SizedBox(
+                      const Icon(Icons.error_outline),
+                      const SizedBox(
                         width: 5,
                       ),
                       Text(
@@ -51,8 +51,8 @@ class BrowsePage extends StatelessWidget {
                 Tab(
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline),
-                      SizedBox(
+                      const Icon(Icons.error_outline),
+                      const SizedBox(
                         width: 5,
                       ),
                       Text(
@@ -66,9 +66,9 @@ class BrowsePage extends StatelessWidget {
                 )
               ]),
         ),
-        Expanded(
+        const Expanded(
           child: TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
+              physics: NeverScrollableScrollPhysics(),
               children: [PopularPage(), LatestPage(), FilterPage()]),
         )
       ],
@@ -83,10 +83,10 @@ class BrowsePageAppbar extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      title: Text("Browse"),
+      title: const Text("Browse"),
       actions: [
-        IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-        IconButton(onPressed: () {}, icon: Icon(Icons.grid_view_sharp)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.grid_view_sharp)),
       ],
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class PopularPage extends StatelessWidget {
   const PopularPage({super.key});
 
@@ -7,33 +8,38 @@ class PopularPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: GridView.builder(
-        shrinkWrap: false,
-          itemCount: 10,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: 5, childAspectRatio: 1/1.75,),
+          shrinkWrap: false,
+          itemCount: 5,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 5,
+            childAspectRatio: 1 / 1.75,
+          ),
           itemBuilder: (context, index) {
             return Padding(
-              padding: EdgeInsets.all(5),
+              padding: const EdgeInsets.all(5),
               child: Column(
                 children: [
                   Container(
                     color: Colors.red,
-                    child: Image(
+                    child: const Image(
                       fit: BoxFit.contain,
                       image: AssetImage("asset/image/one_piece.jpg"),
                     ),
                   ),
-                  SizedBox(height: 10,),
-                  Row(
-                    children: [
-                      Text("One piece")
-                    ],
+                  const SizedBox(
+                    height: 10,
                   ),
-                  SizedBox(height: 10,),
+                  const Row(
+                    children: [Text("One piece")],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
                 ],
               ),
             );
-          }
-      ),
+          }),
     );
   }
 }

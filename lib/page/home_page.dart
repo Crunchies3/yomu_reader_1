@@ -18,8 +18,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
   int currentPageIndex = 0;
-  Widget currentPage = LibraryPage();
-  Widget currentAppbar = LibraryAppbar();
+  Widget currentPage = const LibraryPage();
+  Widget currentAppbar = const LibraryAppbar();
   double currAppbarSize = 60.0;
 
   @override
@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
           bottomNavigationBar: NavigationBarTheme(
             data: NavigationBarThemeData(
                 indicatorColor: Theme.of(context).colorScheme.tertiary,
-                labelTextStyle: MaterialStateProperty.all(TextStyle(fontSize: 14,))
+                labelTextStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14,))
             ),
             child: NavigationBar(
               backgroundColor: Theme.of(context).colorScheme.primary,
@@ -47,26 +47,26 @@ class _HomePageState extends State<HomePage> {
 
                   switch (index) {
                     case 0:
-                      currentPage = LibraryPage();
-                      currentAppbar = LibraryAppbar();
+                      currentPage = const LibraryPage();
+                      currentAppbar = const LibraryAppbar();
                       currAppbarSize = 60.0;
                       break;
                     case 1:
-                      currentPage = UpdatesPage();
-                      currentAppbar = UpdatesPageAppbar();
+                      currentPage = const UpdatesPage();
+                      currentAppbar = const UpdatesPageAppbar();
                       currAppbarSize = 60.0;
                       break;
                     case 2:
-                      currentPage = HistoryPage();
-                      currentAppbar = HistoryPageAppbar();
+                      currentPage = const HistoryPage();
+                      currentAppbar = const HistoryPageAppbar();
                       currAppbarSize = 60.0;
                       break;
                     case 3:
-                      currentPage = BrowsePage();
-                      currentAppbar = BrowsePageAppbar();
+                      currentPage = const BrowsePage();
+                      currentAppbar = const BrowsePageAppbar();
                       currAppbarSize = 60.0;
                       break;
-                    case 4: currentPage = MorePage();
+                    case 4: currentPage = const MorePage();
                     currentAppbar = AppBar();
                   }
                 });
