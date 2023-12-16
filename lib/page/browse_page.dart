@@ -14,20 +14,68 @@ class BrowsePage extends StatefulWidget {
   State<BrowsePage> createState() => _BrowsePageState();
 }
 
-class _BrowsePageState extends State<BrowsePage> with SingleTickerProviderStateMixin{
+class _BrowsePageState extends State<BrowsePage>
+    with SingleTickerProviderStateMixin {
   late TabController controller;
   Icon cusIcon = Icon(Icons.search);
   Widget cusSearchBar = Text("Browse");
   List<dynamic> mangaIds = [];
 
+  onLoad() {
+    switch (controller.index) {
+      case 0:
+        getPopularManga();
+        break;
+      case 1:
+        getLatestManga();
+        break;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     controller = TabController(length: 3, vsync: this);
-
+    onLoad();
     controller.addListener(() {
-      setState(() {});
+      setState(() {
+        onLoad();
+      });
     });
+  }
+
+  getLatestManga() {}
+
+  getPopularManga() async {
+    Map<String, String> order = {
+      "followedCount": "desc",
+    };
+
+    Map<String, dynamic> finalOrderQuery = {};
+    order.forEach((key, value) {
+      finalOrderQuery["order[$key]"] = value;
+    });
+
+    var base_url = "https://api.mangadex.org";
+    var included_tag_ids = [];
+    var excluded_tag_ids = [];
+    var final_order_query = {};
+
+    var response =
+        await http.get(Uri.parse("$base_url/manga").replace(queryParameters: {
+      ...{
+        "includedTags[]": included_tag_ids,
+        "excludedTags[]": excluded_tag_ids,
+      },
+      ...final_order_query,
+    }));
+
+    var data = jsonDecode(response.body)["data"];
+    setState(() {
+      mangaIds = [for (var manga in data) manga["id"]];
+    });
+    PopularPage(mangaId: mangaIds,);
+    print(mangaIds);
   }
 
   @override
@@ -35,7 +83,6 @@ class _BrowsePageState extends State<BrowsePage> with SingleTickerProviderStateM
     controller.dispose();
     super.dispose();
   }
-
 
   searchManga(String p_title) async {
     try {
@@ -62,7 +109,7 @@ class _BrowsePageState extends State<BrowsePage> with SingleTickerProviderStateM
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         bottom: TabBar(
-          controller: controller,
+            controller: controller,
             labelColor: Theme.of(context).colorScheme.tertiary,
             indicatorColor: Theme.of(context).colorScheme.tertiary,
             isScrollable: true,
@@ -71,8 +118,7 @@ class _BrowsePageState extends State<BrowsePage> with SingleTickerProviderStateM
               MyTab(icon: Icons.favorite, text: "Popular"),
               MyTab(icon: Icons.error_outline, text: "Latest"),
               MyTab(icon: Icons.filter_list, text: "Filter"),
-            ]
-        ),
+            ]),
         title: cusSearchBar,
         actions: [
           IconButton(
@@ -106,10 +152,12 @@ class _BrowsePageState extends State<BrowsePage> with SingleTickerProviderStateM
         ],
       ),
       body: TabBarView(
-        controller: controller,
+          controller: controller,
           physics: NeverScrollableScrollPhysics(),
           children: [
-            PopularPage(),
+            PopularPage(
+              mangaId: [],
+            ),
             LatestPage(),
             FilterPage(
               mangaId: [],
