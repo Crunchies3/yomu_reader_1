@@ -97,7 +97,6 @@ class _BrowsePageState extends State<BrowsePage>
       setState(() {
         mangaIds = mangaList.map((manga) => manga['id']).toList();
       });
-      FilterPage(mangaId: mangaIds);
     } catch (e) {
       print(e);
     }
@@ -156,11 +155,11 @@ class _BrowsePageState extends State<BrowsePage>
           physics: NeverScrollableScrollPhysics(),
           children: [
             PopularPage(
-              mangaId: [],
+              mangaId: mangaIds,
             ),
             LatestPage(),
             FilterPage(
-              mangaId: [],
+              mangaId: mangaIds,
             )
           ]),
     );

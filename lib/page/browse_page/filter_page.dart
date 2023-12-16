@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
-class FilterPage extends StatelessWidget {
+class FilterPage extends StatefulWidget {
   final List<dynamic> mangaId;
   const FilterPage({super.key, required this.mangaId});
 
+  @override
+  State<FilterPage> createState() => _FilterPageState();
+}
+
+class _FilterPageState extends State<FilterPage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: GridView.builder(
           shrinkWrap: false,
-          itemCount: 5,
+          itemCount: widget.mangaId.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisSpacing: 5,
