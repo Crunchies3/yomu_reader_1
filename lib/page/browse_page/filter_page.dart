@@ -21,6 +21,7 @@ class _FilterPageState extends State<FilterPage> {
             childAspectRatio: 1 / 1.75,
           ),
           itemBuilder: (context, index) {
+            final mangaIDs = widget.mangaId[index];
             return Padding(
               padding: const EdgeInsets.all(5),
               child: Column(
@@ -32,8 +33,8 @@ class _FilterPageState extends State<FilterPage> {
                   const SizedBox(
                     height: 10,
                   ),
-                  const Row(
-                    children: [Text("One piece")],
+                  Row(
+                    children: [Text(mangaIDs)],
                   ),
                   const SizedBox(
                     height: 10,
