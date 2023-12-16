@@ -21,7 +21,7 @@ class FilterPage extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    height: 300,
+                    height: 285,
                     color: Theme.of(context).colorScheme.secondary,
                   ),
                   const SizedBox(

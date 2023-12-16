@@ -5,6 +5,8 @@ import 'package:yomu_reader_1/page/browse_page/popular_page.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../components/my_tab.dart';
+
 class BrowsePage extends StatefulWidget {
   const BrowsePage({super.key});
 
@@ -14,30 +16,21 @@ class BrowsePage extends StatefulWidget {
 
 class _BrowsePageState extends State<BrowsePage>
     with SingleTickerProviderStateMixin {
-  late TabController controller;
-
-
-
+  late TabController controller = TabController(length: 3, vsync: this);
   @override
   void initState() {
     super.initState();
     controller = TabController(length: 3, vsync: this);
 
     controller.addListener(() {
-      setState(() {
-      });
+      setState(() {});
     });
   }
-
 
   @override
   void dispose() {
     controller.dispose();
     super.dispose();
-  }
-
-  int getCurrentIndex() {
-    return controller.index;
   }
 
   @override
@@ -53,57 +46,12 @@ class _BrowsePageState extends State<BrowsePage>
               isScrollable: true,
               tabAlignment: TabAlignment.start,
               tabs: [
-                Tab(
-                  child: Row(
-                    children: [
-                      const Icon(Icons.favorite),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        "Popular",
-                        style: TextStyle(
-                            color:
-                                Theme.of(context).colorScheme.inversePrimary),
-                      )
-                    ],
-                  ),
-                ),
-                Tab(
-                  child: Row(
-                    children: [
-                      const Icon(Icons.error_outline),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        "Latest",
-                        style: TextStyle(
-                            color:
-                                Theme.of(context).colorScheme.inversePrimary),
-                      )
-                    ],
-                  ),
-                ),
-                Tab(
-                  child: Row(
-                    children: [
-                      const Icon(Icons.filter_list),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        "Filter",
-                        style: TextStyle(
-                            color:
-                                Theme.of(context).colorScheme.inversePrimary),
-                      )
-                    ],
-                  ),
-                ),
+                MyTab(icon: Icons.favorite, text: "Popular"),
+                MyTab(icon: Icons.error_outline, text: "Latest"),
+                MyTab(icon: Icons.filter_list, text: "Filter"),
               ]),
         ),
-         Expanded(
+        Expanded(
           child: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               controller: controller,
@@ -120,6 +68,8 @@ class _BrowsePageState extends State<BrowsePage>
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////x
+
 class BrowsePageAppbar extends StatefulWidget {
   const BrowsePageAppbar({super.key});
 
@@ -131,13 +81,6 @@ class _BrowsePageAppbarState extends State<BrowsePageAppbar> {
   Icon cusIcon = Icon(Icons.search);
   Widget cusSearchBar = Text("Browse");
   List<dynamic> mangaIds = [];
-  var currentPageIndex;
-
-  void updateState() {
-    setState(() {
-      currentPageIndex = _BrowsePageState().getCurrentIndex();
-    });
-  }
 
   searchManga(String p_title) async {
     try {
@@ -162,9 +105,7 @@ class _BrowsePageAppbarState extends State<BrowsePageAppbar> {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      title: Text(
-        "Browser ${currentPageIndex}"
-      ) ,
+      title: cusSearchBar,
       actions: [
         IconButton(
             onPressed: () {

@@ -21,7 +21,7 @@ class LatestPage extends StatelessWidget {
                 children: [
                   Container(
                     color: Theme.of(context).colorScheme.secondary,
-                    height: 300,
+                    height: 285,
                   ),
                   const SizedBox(
                     height: 10,
