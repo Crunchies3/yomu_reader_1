@@ -184,6 +184,7 @@ class _BrowsePageState extends State<BrowsePage>
             LatestPage(),
             FilterPage(
               mangaId: mangaIds,
+              mangaTitle: mangaTitles,
             )
           ]),
     );

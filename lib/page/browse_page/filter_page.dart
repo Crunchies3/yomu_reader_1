@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 class FilterPage extends StatefulWidget {
   final List<dynamic> mangaId;
-  const FilterPage({super.key, required this.mangaId});
+  final List<dynamic> mangaTitle;
+  const FilterPage({super.key, required this.mangaId, required this.mangaTitle});
 
   @override
   State<FilterPage> createState() => FilterPageState();
@@ -31,14 +32,14 @@ class FilterPageState extends State<FilterPage> {
       padding: const EdgeInsets.all(5.0),
       child: GridView.builder(
           shrinkWrap: false,
-          itemCount: widget.mangaId.length,
+          itemCount: widget.mangaTitle.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisSpacing: 5,
             childAspectRatio: 1 / 1.75,
           ),
           itemBuilder: (context, index) {
-            final mangaIDs = widget.mangaId[index];
+            final mangaTitle = widget.mangaTitle[index];
             return Padding(
               padding: const EdgeInsets.all(5),
               child: Column(
@@ -51,7 +52,7 @@ class FilterPageState extends State<FilterPage> {
                     height: 10,
                   ),
                   Row(
-                    children: [Expanded(child: Text(mangaIDs))],
+                    children: [Expanded(child: Text(mangaTitle))],
                   ),
                   const SizedBox(
                     height: 10,
