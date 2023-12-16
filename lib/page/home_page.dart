@@ -19,7 +19,6 @@ class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
   int currentPageIndex = 0;
   Widget currentPage = const LibraryPage();
-  Widget currentAppbar = const LibraryAppbar();
   double currAppbarSize = 60.0;
 
   @override
@@ -27,10 +26,6 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(currAppbarSize), // here the desired height
-          child: currentAppbar,
-        ),
         body: currentPage,
         bottomNavigationBar: NavigationBarTheme(
           data: NavigationBarThemeData(
@@ -46,26 +41,17 @@ class _HomePageState extends State<HomePage> {
                 switch (index) {
                   case 0:
                     currentPage = const LibraryPage();
-                    currentAppbar = const LibraryAppbar();
-                    currAppbarSize = 60.0;
                     break;
                   case 1:
                     currentPage = const UpdatesPage();
-                    currentAppbar = const UpdatesPageAppbar();
-                    currAppbarSize = 60.0;
                     break;
                   case 2:
                     currentPage = const HistoryPage();
-                    currentAppbar = const HistoryPageAppbar();
-                    currAppbarSize = 60.0;
                     break;
                   case 3:
                     currentPage = const BrowsePage();
-                    currentAppbar = const BrowsePageAppbar();
-                    currAppbarSize = 60.0;
                     break;
                   case 4: currentPage = const MorePage();
-                  currentAppbar = AppBar();
                 }
               });
             },

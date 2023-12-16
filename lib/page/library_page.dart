@@ -33,28 +33,18 @@ class LibraryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Hello"),
-        IconButton(onPressed: postData, icon: Icon(Icons.post_add))
-      ],
-    ));
-  }
-}
-
-class LibraryAppbar extends StatelessWidget {
-  const LibraryAppbar({super.key});
-
-  void signUserOut() {
-    FirebaseAuth.instance.signOut();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      title: Text("Library"),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text("Library"),
+      ),
+      body: Center(child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Hello"),
+          IconButton(onPressed: postData, icon: Icon(Icons.post_add))
+        ],
+      )),
     );
   }
 }

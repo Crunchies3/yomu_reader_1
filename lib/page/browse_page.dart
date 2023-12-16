@@ -14,9 +14,12 @@ class BrowsePage extends StatefulWidget {
   State<BrowsePage> createState() => _BrowsePageState();
 }
 
-class _BrowsePageState extends State<BrowsePage>
-    with SingleTickerProviderStateMixin {
-  late TabController controller = TabController(length: 3, vsync: this);
+class _BrowsePageState extends State<BrowsePage> with SingleTickerProviderStateMixin{
+  late TabController controller;
+  Icon cusIcon = Icon(Icons.search);
+  Widget cusSearchBar = Text("Browse");
+  List<dynamic> mangaIds = [];
+
   @override
   void initState() {
     super.initState();
@@ -33,54 +36,6 @@ class _BrowsePageState extends State<BrowsePage>
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          color: Theme.of(context).colorScheme.primary,
-          child: TabBar(
-              controller: controller,
-              labelColor: Theme.of(context).colorScheme.tertiary,
-              indicatorColor: Theme.of(context).colorScheme.tertiary,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              tabs: [
-                MyTab(icon: Icons.favorite, text: "Popular"),
-                MyTab(icon: Icons.error_outline, text: "Latest"),
-                MyTab(icon: Icons.filter_list, text: "Filter"),
-              ]),
-        ),
-        Expanded(
-          child: TabBarView(
-              physics: NeverScrollableScrollPhysics(),
-              controller: controller,
-              children: [
-                PopularPage(),
-                LatestPage(),
-                FilterPage(
-                  mangaId: [],
-                )
-              ]),
-        )
-      ],
-    );
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////x
-
-class BrowsePageAppbar extends StatefulWidget {
-  const BrowsePageAppbar({super.key});
-
-  @override
-  State<BrowsePageAppbar> createState() => _BrowsePageAppbarState();
-}
-
-class _BrowsePageAppbarState extends State<BrowsePageAppbar> {
-  Icon cusIcon = Icon(Icons.search);
-  Widget cusSearchBar = Text("Browse");
-  List<dynamic> mangaIds = [];
 
   searchManga(String p_title) async {
     try {
@@ -103,38 +58,63 @@ class _BrowsePageAppbarState extends State<BrowsePageAppbar> {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      title: cusSearchBar,
-      actions: [
-        IconButton(
-            onPressed: () {
-              setState(() {
-                if (this.cusIcon.icon == Icons.search) {
-                  this.cusIcon = Icon(Icons.cancel);
-                  this.cusSearchBar = TextField(
-                    onSubmitted: (value) {
-                      searchManga(value);
-                    },
-                    cursorColor: Theme.of(context).colorScheme.inversePrimary,
-                    textInputAction: TextInputAction.search,
-                    decoration: InputDecoration(
-                      hintText: "Search...",
-                    ),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.inversePrimary,
-                    ),
-                  );
-                } else {
-                  this.cusIcon = Icon(Icons.search);
-                  this.cusSearchBar = Text("Browse");
-                }
-              });
-            },
-            icon: cusIcon),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.filter_list)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.grid_view_sharp)),
-      ],
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        bottom: TabBar(
+          controller: controller,
+            labelColor: Theme.of(context).colorScheme.tertiary,
+            indicatorColor: Theme.of(context).colorScheme.tertiary,
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
+            tabs: [
+              MyTab(icon: Icons.favorite, text: "Popular"),
+              MyTab(icon: Icons.error_outline, text: "Latest"),
+              MyTab(icon: Icons.filter_list, text: "Filter"),
+            ]
+        ),
+        title: cusSearchBar,
+        actions: [
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  if (this.cusIcon.icon == Icons.search) {
+                    this.cusIcon = Icon(Icons.cancel);
+                    this.cusSearchBar = TextField(
+                      onSubmitted: (value) {
+                        searchManga(value);
+                        controller.animateTo(2);
+                      },
+                      cursorColor: Theme.of(context).colorScheme.inversePrimary,
+                      textInputAction: TextInputAction.search,
+                      decoration: InputDecoration(
+                        hintText: "Search...",
+                      ),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                    );
+                  } else {
+                    this.cusIcon = Icon(Icons.search);
+                    this.cusSearchBar = Text("Browse");
+                  }
+                });
+              },
+              icon: cusIcon),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.filter_list)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.grid_view_sharp)),
+        ],
+      ),
+      body: TabBarView(
+        controller: controller,
+          physics: NeverScrollableScrollPhysics(),
+          children: [
+            PopularPage(),
+            LatestPage(),
+            FilterPage(
+              mangaId: [],
+            )
+          ]),
     );
   }
 }
