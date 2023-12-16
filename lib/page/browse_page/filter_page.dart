@@ -4,10 +4,27 @@ class FilterPage extends StatefulWidget {
   const FilterPage({super.key, required this.mangaId});
 
   @override
-  State<FilterPage> createState() => _FilterPageState();
+  State<FilterPage> createState() => FilterPageState();
 }
 
-class _FilterPageState extends State<FilterPage> {
+class FilterPageState extends State<FilterPage> {
+
+  final List<dynamic> mangaTitles = [""];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => getTitles());
+
+  }
+
+
+  void getTitles() async {
+    mangaTitles[0] = widget.mangaId[0];
+    print(mangaTitles[0]);
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -27,14 +44,14 @@ class _FilterPageState extends State<FilterPage> {
               child: Column(
                 children: [
                   Container(
-                    height: 285,
+                    height: 270,
                     color: Theme.of(context).colorScheme.secondary,
                   ),
                   const SizedBox(
                     height: 10,
                   ),
                   Row(
-                    children: [Text(mangaIDs)],
+                    children: [Expanded(child: Text(mangaIDs))],
                   ),
                   const SizedBox(
                     height: 10,

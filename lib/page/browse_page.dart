@@ -20,6 +20,7 @@ class _BrowsePageState extends State<BrowsePage>
   Icon cusIcon = Icon(Icons.search);
   Widget cusSearchBar = Text("Browse");
   List<dynamic> mangaIds = [];
+  List<dynamic> mangaTitles = [];
 
   onLoad() {
     switch (controller.index) {
@@ -85,7 +86,9 @@ class _BrowsePageState extends State<BrowsePage>
   }
 
   searchManga(String p_title) async {
+
     try {
+      mangaIds = [];
       const String baseUrl = 'https://api.mangadex.org';
       final String title = p_title;
       final response = await http.get(
@@ -100,6 +103,27 @@ class _BrowsePageState extends State<BrowsePage>
     } catch (e) {
       print(e);
     }
+
+    try{
+      mangaTitles.length = mangaIds.length;
+
+      for(int index = 0; index < mangaTitles.length; index++) {
+        final String id = mangaIds[index];
+        String baseurl = "https://api.mangadex.org/manga/$id";
+        final uri = Uri.parse(baseurl);
+        final response = await http.get(uri);
+        final body = response.body;
+        final json = jsonDecode(body);
+        setState(() {
+          mangaTitles[index] = json["data"]["attributes"]["title"]["en"];
+        });
+      }
+
+
+    } catch(e){
+      print(e);
+    }
+
   }
 
   @override
