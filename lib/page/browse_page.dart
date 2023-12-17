@@ -21,6 +21,7 @@ class _BrowsePageState extends State<BrowsePage>
   Widget cusSearchBar = Text("Browse");
   List<dynamic> mangaIds = [];
   List<dynamic> mangaTitles = [];
+  List<dynamic> mangaCoversFileName = [];
 
   onLoad() {
     switch (controller.index) {
@@ -105,16 +106,24 @@ class _BrowsePageState extends State<BrowsePage>
     }
 
     try{
-
       mangaTitles = [];
+      mangaCoversFileName = [];
+      List<dynamic> include = ["cover_art"];
       const String baseUrl = 'https://api.mangadex.org';
-      final String title = p_title;
       final response = await http.get(
-        Uri.parse('$baseUrl/manga').replace(queryParameters: {'ids[]': mangaIds}),
+        Uri.parse('$baseUrl/manga').replace(queryParameters: {'ids[]': mangaIds, 'includes[]': include}),
         headers: {'Content-Type': 'application/json'},
       );
       final responseData = jsonDecode(response.body);
       final mangaList = responseData['data'] as List<dynamic>;
+      for (var manga in mangaList) {
+        final mangaRelation = manga['relationships'] as List<dynamic>;
+        final coverArt = mangaRelation.firstWhere((relationship) => relationship['type'] == 'cover_art');
+        String coverFileName = coverArt["attributes"]["fileName"];
+        setState(() {
+          mangaCoversFileName.add(coverFileName);
+        });
+      }
       setState(() {
         mangaTitles = mangaList.map((manga) => manga["attributes"]["title"]["en"]).toList();
       });
@@ -122,6 +131,24 @@ class _BrowsePageState extends State<BrowsePage>
     } catch(e){
       print(e);
     }
+
+    // try{
+    //   List<dynamic> include = ["cover_art"];
+    //   mangaCovers = [];
+    //   const String baseUrl = 'https://api.mangadex.org';
+    //   final response = await http.get(
+    //     Uri.parse('$baseUrl/manga').replace(queryParameters: {'includes[]': include}),
+    //     headers: {'Content-Type': 'application/json'},
+    //   );
+    //   final responseData = jsonDecode(response.body);
+    //   final mangaList = responseData['data'] as List<dynamic>;
+    //   setState(() {
+    //     mangaTitles = mangaList.map((manga) => manga["attributes"]["title"]["en"]).toList();
+    //   });
+    //
+    // } catch(e){
+    //   print(e);
+    // }
 
   }
 
