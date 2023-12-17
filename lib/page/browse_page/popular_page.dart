@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yomu_reader_1/page/screen/detail_screen.dart';
 
 class PopularPage extends StatefulWidget {
   final List<dynamic> mangaId;
@@ -42,14 +43,20 @@ class PopularPageState extends State<PopularPage> {
             ),
             itemBuilder: (context, index) {
               final mangaTitle = widget.mangaTitle[index];
+              final id = widget.mangaId[index];
               return Padding(
                 padding: const EdgeInsets.all(5),
                 child: Column(
                   children: [
-                    Container(
-                      height: 270,
-                      color: Theme.of(context).colorScheme.inversePrimary,
-                      child: Image.network(widget.mangaCover[index], fit: BoxFit.fill,),
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => DetailScreen()));
+                      },
+                      child: Container(
+                        height: 270,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        child: Image.network(widget.mangaCover[index], fit: BoxFit.fill,),
+                      ),
                     ),
                     const SizedBox(
                       height: 10,

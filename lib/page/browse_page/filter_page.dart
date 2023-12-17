@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../screen/detail_screen.dart';
 class FilterPage extends StatefulWidget {
   final List<dynamic> mangaId;
   final List<dynamic> mangaTitle;
@@ -46,10 +48,15 @@ class FilterPageState extends State<FilterPage> {
               padding: const EdgeInsets.all(5),
               child: Column(
                 children: [
-                  Container(
-                    height: 270,
-                    color: Theme.of(context).colorScheme.secondary,
-                    child: Image.network(widget.mangaCover[index], fit: BoxFit.fill,),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => DetailScreen()));
+                    },
+                    child: Container(
+                      height: 270,
+                      color: Theme.of(context).colorScheme.secondary,
+                      child: Image.network(widget.mangaCover[index], fit: BoxFit.fill,),
+                    ),
                   ),
                   const SizedBox(
                     height: 10,
