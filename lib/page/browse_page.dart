@@ -22,6 +22,7 @@ class _BrowsePageState extends State<BrowsePage>
   List<dynamic> mangaIds = [];
   List<dynamic> mangaTitles = [];
   List<dynamic> mangaCoversFileName = [];
+  List<dynamic> mangaCovers = [];
 
   onLoad() {
     switch (controller.index) {
@@ -76,7 +77,9 @@ class _BrowsePageState extends State<BrowsePage>
     setState(() {
       mangaIds = [for (var manga in data) manga["id"]];
     });
-    PopularPage(mangaId: mangaIds,);
+    PopularPage(
+      mangaId: mangaIds,
+    );
     print(mangaIds);
   }
 
@@ -87,7 +90,6 @@ class _BrowsePageState extends State<BrowsePage>
   }
 
   searchManga(String p_title) async {
-
     try {
       mangaIds = [];
       const String baseUrl = 'https://api.mangadex.org';
@@ -105,51 +107,44 @@ class _BrowsePageState extends State<BrowsePage>
       print(e);
     }
 
-    try{
+    try {
       mangaTitles = [];
       mangaCoversFileName = [];
       List<dynamic> include = ["cover_art"];
       const String baseUrl = 'https://api.mangadex.org';
       final response = await http.get(
-        Uri.parse('$baseUrl/manga').replace(queryParameters: {'ids[]': mangaIds, 'includes[]': include}),
+        Uri.parse('$baseUrl/manga').replace(
+            queryParameters: {'ids[]': mangaIds, 'includes[]': include}),
         headers: {'Content-Type': 'application/json'},
       );
       final responseData = jsonDecode(response.body);
       final mangaList = responseData['data'] as List<dynamic>;
       for (var manga in mangaList) {
         final mangaRelation = manga['relationships'] as List<dynamic>;
-        final coverArt = mangaRelation.firstWhere((relationship) => relationship['type'] == 'cover_art');
+        final coverArt = mangaRelation
+            .firstWhere((relationship) => relationship['type'] == 'cover_art');
         String coverFileName = coverArt["attributes"]["fileName"];
         setState(() {
           mangaCoversFileName.add(coverFileName);
         });
       }
       setState(() {
-        mangaTitles = mangaList.map((manga) => manga["attributes"]["title"]["en"]).toList();
+        mangaTitles = mangaList
+            .map((manga) => manga["attributes"]["title"]["en"])
+            .toList();
       });
-
-    } catch(e){
+    } catch (e) {
       print(e);
     }
 
-    // try{
-    //   List<dynamic> include = ["cover_art"];
-    //   mangaCovers = [];
-    //   const String baseUrl = 'https://api.mangadex.org';
-    //   final response = await http.get(
-    //     Uri.parse('$baseUrl/manga').replace(queryParameters: {'includes[]': include}),
-    //     headers: {'Content-Type': 'application/json'},
-    //   );
-    //   final responseData = jsonDecode(response.body);
-    //   final mangaList = responseData['data'] as List<dynamic>;
-    //   setState(() {
-    //     mangaTitles = mangaList.map((manga) => manga["attributes"]["title"]["en"]).toList();
-    //   });
-    //
-    // } catch(e){
-    //   print(e);
-    // }
-
+    mangaCovers = [];
+    mangaCovers.length = mangaIds.length;
+    for (int i = 0; i < mangaIds.length; i++) {
+      final mangaId = mangaIds[i];
+      final fileName = mangaCoversFileName[i];
+      mangaCovers[i] =
+          "https://uploads.mangadex.org/covers/$mangaId/$fileName";
+    }
   }
 
   @override
@@ -211,6 +206,7 @@ class _BrowsePageState extends State<BrowsePage>
             FilterPage(
               mangaId: mangaIds,
               mangaTitle: mangaTitles,
+              mangaCover: mangaCovers,
             )
           ]),
     );

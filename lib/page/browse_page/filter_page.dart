@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 class FilterPage extends StatefulWidget {
   final List<dynamic> mangaId;
   final List<dynamic> mangaTitle;
-  const FilterPage({super.key, required this.mangaId, required this.mangaTitle});
+  final List<dynamic> mangaCover;
+
+  const FilterPage({super.key, required this.mangaId, required this.mangaTitle, required this.mangaCover});
 
   @override
   State<FilterPage> createState() => FilterPageState();
