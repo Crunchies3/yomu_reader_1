@@ -105,20 +105,19 @@ class _BrowsePageState extends State<BrowsePage>
     }
 
     try{
-      mangaTitles.length = mangaIds.length;
 
-      for(int index = 0; index < mangaTitles.length; index++) {
-        final String id = mangaIds[index];
-        String baseurl = "https://api.mangadex.org/manga/$id";
-        final uri = Uri.parse(baseurl);
-        final response = await http.get(uri);
-        final body = response.body;
-        final json = jsonDecode(body);
-        setState(() {
-          mangaTitles[index] = json["data"]["attributes"]["title"]["en"];
-        });
-      }
-
+      mangaTitles = [];
+      const String baseUrl = 'https://api.mangadex.org';
+      final String title = p_title;
+      final response = await http.get(
+        Uri.parse('$baseUrl/manga').replace(queryParameters: {'ids[]': mangaIds}),
+        headers: {'Content-Type': 'application/json'},
+      );
+      final responseData = jsonDecode(response.body);
+      final mangaList = responseData['data'] as List<dynamic>;
+      setState(() {
+        mangaTitles = mangaList.map((manga) => manga["attributes"]["title"]["en"]).toList();
+      });
 
     } catch(e){
       print(e);
