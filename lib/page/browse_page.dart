@@ -50,37 +50,78 @@ class _BrowsePageState extends State<BrowsePage>
   getLatestManga() {}
 
   getPopularManga() async {
-    Map<String, String> order = {
-      "followedCount": "desc",
-    };
+    try {
+      Map<String, String> order = {
+        "followedCount": "desc",
+      };
 
-    Map<String, dynamic> finalOrderQuery = {};
-    order.forEach((key, value) {
-      finalOrderQuery["order[$key]"] = value;
-    });
+      Map<String, dynamic> finalOrderQuery = {};
+      order.forEach((key, value) {
+        finalOrderQuery["order[$key]"] = value;
+      });
 
-    var base_url = "https://api.mangadex.org";
-    var included_tag_ids = [];
-    var excluded_tag_ids = [];
-    var final_order_query = {};
+      var base_url = "https://api.mangadex.org";
+      var included_tag_ids = [];
+      var excluded_tag_ids = [];
+      var final_order_query = {};
 
-    var response =
-        await http.get(Uri.parse("$base_url/manga").replace(queryParameters: {
-      ...{
-        "includedTags[]": included_tag_ids,
-        "excludedTags[]": excluded_tag_ids,
-      },
-      ...final_order_query,
-    }));
+      var response =
+      await http.get(Uri.parse("$base_url/manga").replace(queryParameters: {
+        ...{
+          "includedTags[]": included_tag_ids,
+          "excludedTags[]": excluded_tag_ids,
+        },
+        ...final_order_query,
+      }));
 
-    var data = jsonDecode(response.body)["data"];
-    setState(() {
-      mangaIds = [for (var manga in data) manga["id"]];
-    });
-    PopularPage(
-      mangaId: mangaIds,
-    );
-    print(mangaIds);
+      var data = jsonDecode(response.body)["data"];
+      setState(() {
+        mangaIds = [for (var manga in data) manga["id"]];
+      });
+      print(mangaIds);
+    } catch(e) {
+      print(e);
+    }
+
+    try{
+      mangaTitles = [];
+      mangaCoversFileName = [];
+      List<dynamic> include = ["cover_art"];
+      const String baseUrl = 'https://api.mangadex.org';
+      final response = await http.get(
+        Uri.parse('$baseUrl/manga').replace(
+            queryParameters: {'ids[]': mangaIds, 'includes[]': include}),
+        headers: {'Content-Type': 'application/json'},
+      );
+      final responseData = jsonDecode(response.body);
+      final mangaList = responseData['data'] as List<dynamic>;
+      for (var manga in mangaList) {
+        final mangaRelation = manga['relationships'] as List<dynamic>;
+        final coverArt = mangaRelation
+            .firstWhere((relationship) => relationship['type'] == 'cover_art');
+        String coverFileName = coverArt["attributes"]["fileName"];
+        setState(() {
+          mangaCoversFileName.add(coverFileName);
+        });
+      }
+      setState(() {
+        mangaTitles = mangaList
+            .map((manga) => manga["attributes"]["title"]["en"])
+            .toList();
+      });
+
+    }catch(e){
+      print(e);
+    }
+
+    mangaCovers = [];
+    mangaCovers.length = mangaIds.length;
+    for (int i = 0; i < mangaIds.length; i++) {
+      final mangaId = mangaIds[i];
+      final fileName = mangaCoversFileName[i];
+      mangaCovers[i] =
+      "https://uploads.mangadex.org/covers/$mangaId/$fileName";
+    }
   }
 
   @override
@@ -201,6 +242,8 @@ class _BrowsePageState extends State<BrowsePage>
           children: [
             PopularPage(
               mangaId: mangaIds,
+              mangaTitle: mangaTitles,
+              mangaCover: mangaCovers,
             ),
             LatestPage(),
             FilterPage(
