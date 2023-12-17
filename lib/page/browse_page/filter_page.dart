@@ -49,12 +49,17 @@ class FilterPageState extends State<FilterPage> {
                   Container(
                     height: 270,
                     color: Theme.of(context).colorScheme.secondary,
+                    child: Image.network(widget.mangaCover[index], fit: BoxFit.fill,),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
-                  Row(
-                    children: [Expanded(child: Text(mangaTitle))],
+                  Expanded(
+                    child: Row(
+                      children: [Expanded(child: Text(mangaTitle, style: TextStyle(
+                        fontSize: 12
+                      ),))],
+                    ),
                   ),
                   const SizedBox(
                     height: 10,
