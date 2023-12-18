@@ -63,15 +63,14 @@ class _BrowsePageState extends State<BrowsePage>
       var base_url = "https://api.mangadex.org";
       var included_tag_ids = [];
       var excluded_tag_ids = [];
-      var final_order_query = {};
 
       var response =
-      await http.get(Uri.parse("$base_url/manga").replace(queryParameters: {
+          await http.get(Uri.parse("$base_url/manga").replace(queryParameters: {
         ...{
           "includedTags[]": included_tag_ids,
           "excludedTags[]": excluded_tag_ids,
         },
-        ...final_order_query,
+        ...finalOrderQuery,
       }));
 
       var data = jsonDecode(response.body)["data"];
@@ -79,18 +78,31 @@ class _BrowsePageState extends State<BrowsePage>
         mangaIds = [for (var manga in data) manga["id"]];
       });
       print(mangaIds);
-    } catch(e) {
+    } catch (e) {
       print(e);
     }
 
-    try{
+    try {
+      Map<String, String> order = {
+        "followedCount": "desc",
+      };
+      Map<String, dynamic> finalOrderQuery = {};
+      order.forEach((key, value) {
+        finalOrderQuery["order[$key]"] = value;
+      });
       mangaTitles = [];
       mangaCoversFileName = [];
       List<dynamic> include = ["cover_art"];
       const String baseUrl = 'https://api.mangadex.org';
       final response = await http.get(
         Uri.parse('$baseUrl/manga').replace(
-            queryParameters: {'ids[]': mangaIds, 'includes[]': include}),
+            queryParameters: {
+              ...{'ids[]': mangaIds,
+                'includes[]': include
+              },
+              ...finalOrderQuery
+            }
+        ),
         headers: {'Content-Type': 'application/json'},
       );
       final responseData = jsonDecode(response.body);
@@ -109,8 +121,7 @@ class _BrowsePageState extends State<BrowsePage>
             .map((manga) => manga["attributes"]["title"]["en"])
             .toList();
       });
-
-    }catch(e){
+    } catch (e) {
       print(e);
     }
 
@@ -119,8 +130,7 @@ class _BrowsePageState extends State<BrowsePage>
     for (int i = 0; i < mangaIds.length; i++) {
       final mangaId = mangaIds[i];
       final fileName = mangaCoversFileName[i];
-      mangaCovers[i] =
-      "https://uploads.mangadex.org/covers/$mangaId/$fileName";
+      mangaCovers[i] = "https://uploads.mangadex.org/covers/$mangaId/$fileName";
     }
   }
 
@@ -183,8 +193,7 @@ class _BrowsePageState extends State<BrowsePage>
     for (int i = 0; i < mangaIds.length; i++) {
       final mangaId = mangaIds[i];
       final fileName = mangaCoversFileName[i];
-      mangaCovers[i] =
-          "https://uploads.mangadex.org/covers/$mangaId/$fileName";
+      mangaCovers[i] = "https://uploads.mangadex.org/covers/$mangaId/$fileName";
     }
   }
 
