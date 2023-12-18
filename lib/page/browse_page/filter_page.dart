@@ -1,33 +1,34 @@
 import 'package:flutter/material.dart';
 
 import '../screen/detail_screen.dart';
+
 class FilterPage extends StatefulWidget {
   final List<dynamic> mangaId;
   final List<dynamic> mangaTitle;
   final List<dynamic> mangaCover;
 
-  const FilterPage({super.key, required this.mangaId, required this.mangaTitle, required this.mangaCover});
+  const FilterPage(
+      {super.key,
+      required this.mangaId,
+      required this.mangaTitle,
+      required this.mangaCover});
 
   @override
   State<FilterPage> createState() => FilterPageState();
 }
 
 class FilterPageState extends State<FilterPage> {
-
   final List<dynamic> mangaTitles = [""];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => getTitles());
-
   }
-
 
   void getTitles() async {
     mangaTitles[0] = widget.mangaId[0];
     print(mangaTitles[0]);
-
   }
 
   @override
@@ -50,13 +51,26 @@ class FilterPageState extends State<FilterPage> {
               child: Column(
                 children: [
                   GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => DetailScreen(title: mangaTitle, id: id,)));
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DetailScreen(
+                                    title: mangaTitle,
+                                    id: id,
+                                    author: "",
+                                    status: "",
+                                    desc: "ahhhhhhhhhhhhhhhh",
+                                    image: "",
+                                  )));
                     },
                     child: Container(
                       height: 270,
                       color: Theme.of(context).colorScheme.secondary,
-                      child: Image.network(widget.mangaCover[index], fit: BoxFit.fill,),
+                      child: Image.network(
+                        widget.mangaCover[index],
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -64,9 +78,13 @@ class FilterPageState extends State<FilterPage> {
                   ),
                   Expanded(
                     child: Row(
-                      children: [Expanded(child: Text(mangaTitle, style: TextStyle(
-                        fontSize: 12
-                      ),))],
+                      children: [
+                        Expanded(
+                            child: Text(
+                          mangaTitle,
+                          style: TextStyle(fontSize: 12),
+                        ))
+                      ],
                     ),
                   ),
                   const SizedBox(

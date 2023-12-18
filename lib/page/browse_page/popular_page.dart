@@ -56,6 +56,7 @@ class PopularPageState extends State<PopularPage> {
               final author = widget.mangaAuthor[index];
               final desc = widget.mangaDescription[index];
               final status = widget.mangaStatus[index];
+              final cover = widget.mangaCover[index];
               return Padding(
                 padding: const EdgeInsets.all(5),
                 child: Column(
@@ -68,6 +69,10 @@ class PopularPageState extends State<PopularPage> {
                                 builder: (context) => DetailScreen(
                                       title: mangaTitle,
                                       id: id,
+                                      author: author,
+                                      status: status,
+                                      desc: desc,
+                                      image: cover,
                                     )));
                       },
                       child: Container(

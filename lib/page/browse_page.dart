@@ -136,11 +136,11 @@ class _BrowsePageState extends State<BrowsePage>
         }).toList();
 
         mangaStatus = mangaList.map((manga) {
-          manga["attributes"]["status"];
+          return manga["attributes"]["status"];
         }).toList();
 
         mangaDescription = mangaList.map((manga) {
-          manga["attributes"]["description"]["en"];
+          return manga["attributes"]["description"]["en"];
         }).toList();
 
       });
