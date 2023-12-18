@@ -20,8 +20,8 @@ class _DescriptionTextState extends State<DescriptionText> {
     super.initState();
 
     if (widget.desc.length > 50) {
-      firstHalf = widget.desc.substring(0, 50);
-      secondHalf = widget.desc.substring(50, widget.desc.length);
+      firstHalf = widget.desc.substring(0, 150);
+      secondHalf = widget.desc.substring(150, widget.desc.length);
     } else {
       firstHalf = widget.desc;
       secondHalf = "";
@@ -31,12 +31,11 @@ class _DescriptionTextState extends State<DescriptionText> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
       child: secondHalf.isEmpty
           ? new Text(firstHalf)
           : new Column(
         children: <Widget>[
-          new Text(flag ? (firstHalf + "...") : (firstHalf + secondHalf)),
+          new Text(flag ? (firstHalf + "...") : (firstHalf + secondHalf),style: TextStyle(fontSize: 12),),
           SizedBox(height: 5,),
           new InkWell(
             child: new Row(
