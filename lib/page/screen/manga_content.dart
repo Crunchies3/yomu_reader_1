@@ -78,43 +78,61 @@ class _MangaContentState extends State<MangaContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(widget.mangaTitle),
-            SizedBox(
-              height: 2,
-            ),
-            Text(
-              "Chapter " + widget.chapterTitle,
-              style: TextStyle(fontSize: 13, color: Colors.grey[400]),
-            ),
-          ],
-        ),
-      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          :ListView.builder(
-          itemCount: pages.length,
-          itemBuilder: (context, index) {
-            final imageUrl = pages[index];
-            return buildImage(imageUrl);
-          }),
+          : NestedScrollView(
+              floatHeaderSlivers: true,
+              headerSliverBuilder: (context, innerBoxScrolled) => [
+                SliverAppBar(
+                  snap: true,
+                  floating: true,
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(widget.mangaTitle),
+                      SizedBox(
+                        height: 2,
+                      ),
+                      Text(
+                        "Chapter " + widget.chapterTitle,
+                        style: TextStyle(fontSize: 13, color: Colors.grey[400]),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+              body: ListView.builder(
+                  itemCount: pages.length,
+                  itemBuilder: (context, index) {
+                    final imageUrl = pages[index];
+                    return buildImage(imageUrl);
+                  }),
+            ),
     );
   }
 
   Widget buildImage(String imageUrl) {
     return Center(
       child: CachedNetworkImage(
+        key: UniqueKey(),
         imageUrl: imageUrl,
-        placeholder: (BuildContext context, String url) =>  Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [CircularProgressIndicator(color: Theme.of(context).colorScheme.tertiary,), SizedBox(height: double.maxFinite,)]),
+        fit: BoxFit.fitWidth,
+        placeholder: (BuildContext context, String url) => Center(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.tertiary,
+                  )
+                ]),
+          ),
         ),
-        errorWidget: (BuildContext context, String url, dynamic error) => const Icon(Icons.error),
+        errorWidget: (BuildContext context, String url, dynamic error) =>
+            const Icon(Icons.error),
       ),
     );
   }
