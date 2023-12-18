@@ -117,9 +117,13 @@ class _BrowsePageState extends State<BrowsePage>
         });
       }
       setState(() {
-        mangaTitles = mangaList
-            .map((manga) => manga["attributes"]["title"]["en"])
-            .toList();
+        mangaTitles = mangaList.map((manga) {
+          if (manga["attributes"]["title"].containsKey("en")) {
+            return manga["attributes"]["title"]["en"];
+          } else {
+            return manga["attributes"]["title"]["ja-ro"];
+          }
+        }).toList();
       });
     } catch (e) {
       print(e);
