@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yomu_reader_1/components/description_text.dart';
 import 'package:http/http.dart' as http;
+import 'package:yomu_reader_1/page/screen/manga_content.dart';
 
 class DetailScreen extends StatefulWidget {
   final String title;
@@ -231,7 +232,17 @@ class _DetailScreenState extends State<DetailScreen> {
 
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MangaContent(
+                                    mangaTitle: widget.title, chapterId: chapterId,
+                                    chapterTitle: chapterTitle,
+                                  )
+                              )
+                          );
+                        },
                         title: Text("Chapter $chapterTitle"),
                         subtitle: Text(publishedAt.substring(0,10), style: TextStyle(
                           fontSize: 11, color: Colors.grey[400]
