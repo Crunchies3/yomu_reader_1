@@ -29,6 +29,8 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
 
   List<dynamic> mangaChapter = [];
+  List<dynamic> revmangaChapter = [];
+  var numberOfAvailableChapter = 0;
 
   @override
   void initState() {
@@ -61,8 +63,9 @@ class _DetailScreenState extends State<DetailScreen> {
         Uri.parse('$baseUrl/manga/$id/feed').replace(
             queryParameters: {
               ...{
-                "limit": "300",
-                "translatedLanguage[]":language
+                "limit": "500",
+                "translatedLanguage[]":language,
+                "includeEmptyPages": "0"
               },
               ...finalOrderQuery
             }
@@ -74,6 +77,8 @@ class _DetailScreenState extends State<DetailScreen> {
       setState(() {
         mangaChapter = mangaList;
       });
+      numberOfAvailableChapter = mangaChapter.length;
+      revmangaChapter = mangaChapter.reversed.toList();
     } catch (e) {
       print(e);
     }
@@ -101,7 +106,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    height: 25,
+                    height: 10,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -202,28 +207,33 @@ class _DetailScreenState extends State<DetailScreen> {
                     desc: widget.desc,
                   )),
                   Text(
-                    "315 chapters",
+                    "$numberOfAvailableChapter chapters",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
+                  SizedBox(height: 10),
                   ListView.builder(
 
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: 50,
+                    itemCount: mangaChapter.length,
                     itemBuilder: (context, index) {
 
-                      final chapter = mangaChapter[index];
+                      final chapter = revmangaChapter[index];
                       final chapterId = chapter["id"];
-                      final publishedAt = chapter["attributes"]["publishAt"];
-                      // final chapterTitle = chapter["attributes"]["chapter"];
-
+                      var publishedAt = chapter["attributes"]["publishAt"];
+                      var chapterTitle;
+                      if(chapter["attributes"]["title"] == null) {
+                        chapterTitle = chapter["attributes"]["chapter"];
+                      }else {
+                        chapterTitle = chapter["attributes"]["chapter"] + " " + chapter["attributes"]["title"];
+                      }
 
 
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
                         onTap: () {},
                         title: Text("Chapter $chapterTitle"),
-                        subtitle: Text(publishedAt, style: TextStyle(
+                        subtitle: Text(publishedAt.substring(0,10), style: TextStyle(
                           fontSize: 11, color: Colors.grey[400]
                         ),),
                       );
