@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:yomu_reader_1/page/description_text.dart';
 
 class DetailScreen extends StatefulWidget {
-  const DetailScreen({super.key});
+  final String title;
+  final String id;
+  const DetailScreen({super.key, required this.title, required this.id});
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
@@ -12,7 +14,6 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
 
   String desc =  "A dark gloomy castle with endless stairways and an ancient library. Scary, mysterious creatures live here, hiding in the night. One day, a girl who lost her memory ends up there. Who is she and how can she get back? And, most importantly, how will the owner of the castle decide her fate?";
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,27 +35,29 @@ class _DetailScreenState extends State<DetailScreen> {
                   SizedBox(
                     width: 20,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "One Piece",
-                        style: TextStyle(fontSize: 22),
-                      ),
-                      Text(
-                        "Oda Eiichiro",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      SizedBox(height: 5,),
-                      Row(
-                        children: [
-                          Icon(CupertinoIcons.clock, size: 12,),
-                          SizedBox(width: 5,),
-                          Text("Ongoing", style: TextStyle(fontSize: 12),)
-                        ],
-                      ),
-
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: TextStyle(fontSize: 22),
+                        ),
+                        Text(
+                          "Oda Eiichiro",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        SizedBox(height: 5,),
+                        Row(
+                          children: [
+                            Icon(CupertinoIcons.clock, size: 12,),
+                            SizedBox(width: 5,),
+                            Text("Ongoing", style: TextStyle(fontSize: 12),)
+                          ],
+                        ),
+                    
+                      ],
+                    ),
                   ),
 
                 ],

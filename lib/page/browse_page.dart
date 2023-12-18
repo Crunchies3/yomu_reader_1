@@ -23,6 +23,9 @@ class _BrowsePageState extends State<BrowsePage>
   List<dynamic> mangaTitles = [];
   List<dynamic> mangaCoversFileName = [];
   List<dynamic> mangaCovers = [];
+  List<dynamic> mangaAuthor = [];
+  List<dynamic> mangaStatus = [];
+  List<dynamic> mangaDescription = [];
 
   onLoad() {
     switch (controller.index) {
@@ -92,7 +95,10 @@ class _BrowsePageState extends State<BrowsePage>
       });
       mangaTitles = [];
       mangaCoversFileName = [];
-      List<dynamic> include = ["cover_art"];
+      mangaAuthor = [];
+      mangaDescription = [];
+      mangaStatus = [];
+      List<dynamic> include = ["cover_art", "author"];
       const String baseUrl = 'https://api.mangadex.org';
       final response = await http.get(
         Uri.parse('$baseUrl/manga').replace(
@@ -112,8 +118,12 @@ class _BrowsePageState extends State<BrowsePage>
         final coverArt = mangaRelation
             .firstWhere((relationship) => relationship['type'] == 'cover_art');
         String coverFileName = coverArt["attributes"]["fileName"];
+        final authorsAttribute = mangaRelation
+            .firstWhere((relationship) => relationship['type'] == 'author');
+        String authorNames = authorsAttribute["attributes"]["name"];
         setState(() {
           mangaCoversFileName.add(coverFileName);
+          mangaAuthor.add(authorNames);
         });
       }
       setState(() {
@@ -124,10 +134,20 @@ class _BrowsePageState extends State<BrowsePage>
             return manga["attributes"]["title"]["ja-ro"];
           }
         }).toList();
+
+        mangaStatus = mangaList.map((manga) {
+          manga["attributes"]["status"];
+        }).toList();
+
+        mangaDescription = mangaList.map((manga) {
+          manga["attributes"]["description"]["en"];
+        }).toList();
+
       });
     } catch (e) {
       print(e);
     }
+
 
     mangaCovers = [];
     mangaCovers.length = mangaIds.length;
@@ -257,6 +277,9 @@ class _BrowsePageState extends State<BrowsePage>
               mangaId: mangaIds,
               mangaTitle: mangaTitles,
               mangaCover: mangaCovers,
+              mangaAuthor: mangaAuthor,
+              mangaDescription: mangaDescription,
+              mangaStatus: mangaStatus,
             ),
             LatestPage(),
             FilterPage(

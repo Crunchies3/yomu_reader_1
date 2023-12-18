@@ -44,13 +44,14 @@ class FilterPageState extends State<FilterPage> {
           ),
           itemBuilder: (context, index) {
             final mangaTitle = widget.mangaTitle[index];
+            final id = widget.mangaId[index];
             return Padding(
               padding: const EdgeInsets.all(5),
               child: Column(
                 children: [
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => DetailScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => DetailScreen(title: mangaTitle, id: id,)));
                     },
                     child: Container(
                       height: 270,
