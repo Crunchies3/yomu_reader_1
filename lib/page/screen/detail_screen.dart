@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:yomu_reader_1/page/description_text.dart';
+import 'package:yomu_reader_1/components/description_text.dart';
+import 'package:http/http.dart' as http;
 
 class DetailScreen extends StatefulWidget {
   final String title;
@@ -24,11 +27,70 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
+
+  List<dynamic> mangaChapter = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => getChapterId());
+    onLoad();
+  }
+
+  void getChapterId() async {
+    mangaChapter[0] = "";
+  }
+
+  void onLoad() async {
+    try {
+
+      Map<String, String> order = {
+        "volume": "asc",
+        "chapter": "asc"
+      };
+
+      List<dynamic> language = ["en",];
+      Map<String, dynamic> finalOrderQuery = {};
+      order.forEach((key, value) {
+        finalOrderQuery["order[$key]"] = value;
+      });
+
+      final id = widget.id;
+      const String baseUrl = 'https://api.mangadex.org';
+      final response = await http.get(
+        Uri.parse('$baseUrl/manga/$id/feed').replace(
+            queryParameters: {
+              ...{
+                "limit": "300",
+                "translatedLanguage[]":language
+              },
+              ...finalOrderQuery
+            }
+        ),
+        headers: {'Content-Type': 'application/json'},
+      );
+      final responseData = jsonDecode(response.body);
+      final mangaList = responseData['data'] as List<dynamic>;
+      setState(() {
+        mangaChapter = mangaList;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+        },
+        label: Text('Start', style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),),
+        icon:  Icon(Icons.play_arrow, color: Theme.of(context).colorScheme.inversePrimary),
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+      ),
       body: Scrollbar(
         interactive: true,
         child: SingleChildScrollView(
@@ -74,7 +136,9 @@ class _DetailScreenState extends State<DetailScreen> {
                               ),
                               Text(
                                 widget.author,
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 12,
+                                  color: Colors.grey
+                                ),
                               ),
                             ]),
                             SizedBox(
@@ -91,7 +155,8 @@ class _DetailScreenState extends State<DetailScreen> {
                                 ),
                                 Text(
                                   widget.status,
-                                  style: TextStyle(fontSize: 12),
+                                  style: TextStyle(fontSize: 12,
+                                  color: Colors.grey),
                                 )
                               ],
                             ),
@@ -141,12 +206,26 @@ class _DetailScreenState extends State<DetailScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   ListView.builder(
+
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: 50,
                     itemBuilder: (context, index) {
+
+                      final chapter = mangaChapter[index];
+                      final chapterId = chapter["id"];
+                      final publishedAt = chapter["attributes"]["publishAt"];
+                      // final chapterTitle = chapter["attributes"]["chapter"];
+
+
+
                       return ListTile(
-                        title: Text('Item ${index + 1}'),
+                        contentPadding: EdgeInsets.zero,
+                        onTap: () {},
+                        title: Text("Chapter $chapterTitle"),
+                        subtitle: Text(publishedAt, style: TextStyle(
+                          fontSize: 11, color: Colors.grey[400]
+                        ),),
                       );
                     },
                   ),

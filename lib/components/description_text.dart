@@ -19,6 +19,10 @@ class _DescriptionTextState extends State<DescriptionText> {
   void initState() {
     super.initState();
 
+    if (widget.desc.length > 1000){
+      flag = true;
+    }
+
     if (widget.desc.length > 50) {
       firstHalf = widget.desc.substring(0, 150);
       secondHalf = widget.desc.substring(150, widget.desc.length);
@@ -35,7 +39,7 @@ class _DescriptionTextState extends State<DescriptionText> {
           ? new Text(firstHalf)
           : new Column(
         children: <Widget>[
-          new Text(flag ? (firstHalf + "...") : (firstHalf + secondHalf),style: TextStyle(fontSize: 12),),
+          new Text(flag ? (firstHalf + "...") : (firstHalf + secondHalf),style: TextStyle(fontSize: 12, color: Colors.grey[400]),),
           SizedBox(height: 5,),
           new InkWell(
             child: new Row(
@@ -43,6 +47,7 @@ class _DescriptionTextState extends State<DescriptionText> {
               children: <Widget>[
                 Icon(
                   flag ? Icons.expand_more: Icons.expand_less,
+                  color: Theme.of(context).colorScheme.tertiary,
                 ),
               ],
             ),
