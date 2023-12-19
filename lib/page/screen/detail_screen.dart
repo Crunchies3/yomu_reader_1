@@ -94,10 +94,12 @@ class _DetailScreenState extends State<DetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.primary,),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          final chapter = mangaChapter[0];
+          final chapter = revmangaChapter[revmangaChapter.length-1];
           final chapterId = chapter["id"];
           var chapterTitle;
           if (chapter["attributes"]["title"] == null) {
@@ -107,17 +109,15 @@ class _DetailScreenState extends State<DetailScreen> {
                 " " +
                 chapter["attributes"]["title"];
           }
-
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => MangaContent(
-                    mangaTitle: widget.title,
-                    chapterId: chapterId,
-                    chapterTitle: chapterTitle,
-                  )));
+                        mangaTitle: widget.title,
+                        mangaChapters: revmangaChapter,
+                        index: revmangaChapter.length-1,
+                      )));
         },
-
         label: Text(
           'Start',
           style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
@@ -243,13 +243,15 @@ class _DetailScreenState extends State<DetailScreen> {
                   isLoading
                       ? Center(
                           child: Column(
-                            children: [
-                              SizedBox(height: 150,),
-                              CircularProgressIndicator(
+                          children: [
+                            SizedBox(
+                              height: 150,
+                            ),
+                            CircularProgressIndicator(
                               color: Theme.of(context).colorScheme.tertiary,
-                                                      ),
-                            ],
-                          ))
+                            ),
+                          ],
+                        ))
                       : ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
@@ -276,8 +278,8 @@ class _DetailScreenState extends State<DetailScreen> {
                                     MaterialPageRoute(
                                         builder: (context) => MangaContent(
                                               mangaTitle: widget.title,
-                                              chapterId: chapterId,
-                                              chapterTitle: chapterTitle,
+                                              mangaChapters: revmangaChapter,
+                                              index: index,
                                             )));
                               },
                               title: Text("Chapter $chapterTitle"),

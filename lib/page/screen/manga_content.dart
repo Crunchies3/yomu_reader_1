@@ -6,14 +6,14 @@ import 'package:http/http.dart' as http;
 
 class MangaContent extends StatefulWidget {
   final String mangaTitle;
-  final String chapterId;
-  final String chapterTitle;
+  final List<dynamic> mangaChapters;
+  final int index;
 
   const MangaContent(
       {super.key,
-      required this.chapterId,
+      required this.mangaChapters,
       required this.mangaTitle,
-      required this.chapterTitle});
+      required this.index});
 
   @override
   State<MangaContent> createState() => _MangaContentState();
@@ -23,13 +23,25 @@ class _MangaContentState extends State<MangaContent> {
   List<dynamic> dataSaver = [];
   List<dynamic> pages = [""];
   bool isLoading = true;
+  int currentChap = 0;
+  String chapterTitle = "";
 
   var hash = "";
   var baseUrl = "";
 
   void onLoad() async {
+    currentChap = widget.index;
+    chapterTitle;
+    if (widget.mangaChapters[currentChap]["attributes"]["title"] == null) {
+      chapterTitle = widget.mangaChapters[currentChap]["attributes"]["chapter"];
+    } else {
+      chapterTitle = widget.mangaChapters[currentChap]["attributes"]["chapter"] +
+          " " +
+          widget.mangaChapters[currentChap]["attributes"]["title"];
+    }
+
     try {
-      final id = widget.chapterId;
+      final id = widget.mangaChapters[currentChap]["id"];
       const String url = 'https://api.mangadex.org';
       final response = await http.get(Uri.parse('$url/at-home/server/$id'));
       final responseData = jsonDecode(response.body);
@@ -75,6 +87,49 @@ class _MangaContentState extends State<MangaContent> {
     WidgetsBinding.instance.addPostFrameCallback((_) => loadData());
   }
 
+  void refreshState(index) async {
+    currentChap = index;
+    chapterTitle;
+    if (widget.mangaChapters[currentChap]["attributes"]["title"] == null) {
+      chapterTitle = widget.mangaChapters[currentChap]["attributes"]["chapter"];
+    } else {
+      chapterTitle = widget.mangaChapters[currentChap]["attributes"]["chapter"] +
+          " " +
+          widget.mangaChapters[currentChap]["attributes"]["title"];
+    }
+
+    try {
+      final id = widget.mangaChapters[currentChap]["id"];
+      const String url = 'https://api.mangadex.org';
+      final response = await http.get(Uri.parse('$url/at-home/server/$id'));
+      final responseData = jsonDecode(response.body);
+      setState(() {
+        dataSaver = responseData["chapter"]["dataSaver"];
+        hash = responseData["chapter"]["hash"];
+        baseUrl = responseData["baseUrl"];
+      });
+    } catch (e) {
+      print(e);
+    }
+
+    try {
+      pages.length = dataSaver.length;
+      for (int i = 0; i < dataSaver.length; i++) {
+        var fileName = dataSaver[i];
+        var url = "$baseUrl/data-saver/$hash/$fileName";
+        pages[i] = url;
+      }
+    } catch (e) {
+      print(e);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => loadData());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,7 +150,7 @@ class _MangaContentState extends State<MangaContent> {
                         height: 2,
                       ),
                       Text(
-                        "Chapter " + widget.chapterTitle,
+                        "Chapter " + chapterTitle,
                         style: TextStyle(fontSize: 13, color: Colors.grey[400]),
                       ),
                     ],
@@ -114,13 +169,52 @@ class _MangaContentState extends State<MangaContent> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            FloatingActionButton(onPressed: () {}, child: Icon(Icons.skip_previous, color: Theme.of(context).colorScheme.inversePrimary,),),
+            Visibility(
+              visible: isFirst(),
+              child: FloatingActionButton(
+                onPressed: () {
+                  setState(() {
+                    setState(() {
+                      var index = ++currentChap;
+                      refreshState(index);
+                    });
+                  });
+                },
+                child: Icon(
+                  Icons.skip_previous,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
+              ),
+            ),
             Expanded(child: Container()),
-            FloatingActionButton(onPressed: (){},child: Icon(Icons.skip_next, color: Theme.of(context).colorScheme.inversePrimary,))
+            Visibility(
+              visible: isLatest(),
+              child: FloatingActionButton(
+                  onPressed: () {
+                    setState(() {
+                      var index = --currentChap;
+                      refreshState(index);
+                    });
+                  },
+                  child: Icon(
+                    Icons.skip_next,
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  )),
+            )
           ],
         ),
       ),
     );
+  }
+
+  bool isLatest() {
+    if(currentChap == 0) return false;
+    else return true;
+  }
+
+  bool isFirst() {
+    if(currentChap == widget.mangaChapters.length-1) return false;
+    else return true;
   }
 
   Widget buildImage(String imageUrl) {
