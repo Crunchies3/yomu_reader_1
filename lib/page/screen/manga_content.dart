@@ -134,7 +134,7 @@ class _MangaContentState extends State<MangaContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.tertiary,))
           : NestedScrollView(
               floatHeaderSlivers: true,
               headerSliverBuilder: (context, innerBoxScrolled) => [
