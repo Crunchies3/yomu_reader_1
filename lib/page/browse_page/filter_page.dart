@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../screen/detail_screen.dart';
@@ -6,12 +7,18 @@ class FilterPage extends StatefulWidget {
   final List<dynamic> mangaId;
   final List<dynamic> mangaTitle;
   final List<dynamic> mangaCover;
+  final List<dynamic> mangaAuthor;
+  final List<dynamic> mangaStatus;
+  final List<dynamic> mangaDescription;
 
   const FilterPage(
       {super.key,
       required this.mangaId,
       required this.mangaTitle,
-      required this.mangaCover});
+      required this.mangaCover,
+      required this.mangaAuthor,
+      required this.mangaStatus,
+      required this.mangaDescription});
 
   @override
   State<FilterPage> createState() => FilterPageState();
@@ -19,12 +26,28 @@ class FilterPage extends StatefulWidget {
 
 class FilterPageState extends State<FilterPage> {
   final List<dynamic> mangaTitles = [""];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => getTitles());
+    WidgetsBinding.instance.addPostFrameCallback((_) => loadData());
   }
+
+  Future loadData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Future.wait(
+        widget.mangaCover.map((imageUrl) => cacheImage(context, imageUrl)).toList());
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future cacheImage(BuildContext context, String imageUrl) =>
+      precacheImage(CachedNetworkImageProvider(imageUrl), context);
 
   void getTitles() async {
     mangaTitles[0] = widget.mangaId[0];
@@ -33,67 +56,80 @@ class FilterPageState extends State<FilterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: GridView.builder(
-          shrinkWrap: false,
-          itemCount: widget.mangaTitle.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 5,
-            childAspectRatio: 1 / 1.75,
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: GridView.builder(
+            addAutomaticKeepAlives: true,
+            shrinkWrap: false,
+            itemCount: widget.mangaId.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 5,
+              childAspectRatio: 1 / 1.75,
+            ),
+            itemBuilder: (context, index) {
+              final mangaTitle = widget.mangaTitle[index];
+              final id = widget.mangaId[index];
+              final author = widget.mangaAuthor[index];
+              final desc = widget.mangaDescription[index];
+              final status = widget.mangaStatus[index];
+              final cover = widget.mangaCover[index];
+              return Padding(
+                padding: const EdgeInsets.all(5),
+                child: buildImage(cover, mangaTitle, id, author, desc, status,cover,index)
+              );
+            }),
+      ),
+    );
+  }
+
+  Widget buildImage(String imageUrl, mangaTitle, id, author, desc, status, cover, index) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DetailScreen(
+                      title: mangaTitle,
+                      id: id,
+                      author: author,
+                      status: status,
+                      desc: desc,
+                      image: cover,
+                    )));
+          },
+          child: Container(
+            height: 270,
+            color: Theme.of(context).colorScheme.primary,
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.fill,
+              errorWidget: (BuildContext context, String url, dynamic error) =>
+              const Icon(Icons.error),
+            ),
           ),
-          itemBuilder: (context, index) {
-            final mangaTitle = widget.mangaTitle[index];
-            final id = widget.mangaId[index];
-            return Padding(
-              padding: const EdgeInsets.all(5),
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DetailScreen(
-                                    title: mangaTitle,
-                                    id: id,
-                                    author: "",
-                                    status: "",
-                                    desc: "ahhhhhhhhhhhhhhhh",
-                                    image: "",
-                                  )));
-                    },
-                    child: Container(
-                      height: 270,
-                      color: Theme.of(context).colorScheme.secondary,
-                      child: Image.network(
-                        widget.mangaCover[index],
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: Text(
-                          mangaTitle,
-                          style: TextStyle(fontSize: 12),
-                        ))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                ],
-              ),
-            );
-          }),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Expanded(
+          child: Row(
+            children: [
+              Expanded(
+                  child: Text(
+                    mangaTitle,
+                    style: TextStyle(fontSize: 12),
+                  ))
+            ],
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+      ],
     );
   }
 }

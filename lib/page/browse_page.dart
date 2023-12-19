@@ -26,6 +26,7 @@ class _BrowsePageState extends State<BrowsePage>
   List<dynamic> mangaAuthor = [];
   List<dynamic> mangaStatus = [];
   List<dynamic> mangaDescription = [];
+  bool isFilterAccessible = false;
 
   bool isLoading = true;
 
@@ -40,6 +41,15 @@ class _BrowsePageState extends State<BrowsePage>
     }
   }
 
+  onTap() {
+    if(isFilterAccessible){
+      int index = controller.previousIndex;
+      setState(() {
+        controller.index=index;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -47,18 +57,126 @@ class _BrowsePageState extends State<BrowsePage>
     onLoad();
     controller.addListener(() {
       setState(() {
+        onTap();
         onLoad();
       });
     });
   }
 
-  getLatestManga() {}
+  getLatestManga() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      mangaIds = [];
+
+      Map<String, String> order = {"latestUploadedChapter": "desc"};
+
+      Map<String, dynamic> finalOrderQuery = {};
+      order.forEach((key, value) {
+        finalOrderQuery["order[$key]"] = value;
+      });
+
+      var base_url = "https://api.mangadex.org";
+      var included_tag_ids = [];
+      var excluded_tag_ids = [];
+
+      var response =
+          await http.get(Uri.parse("$base_url/manga").replace(queryParameters: {
+        ...{
+          "includedTags[]": included_tag_ids,
+          "excludedTags[]": excluded_tag_ids,
+        },
+        ...finalOrderQuery,
+      }));
+
+      var data = jsonDecode(response.body)["data"];
+      setState(() {
+        mangaIds = [for (var manga in data) manga["id"]];
+      });
+      print(mangaIds);
+    } catch (e) {
+      print(e);
+    }
+
+    try {
+      Map<String, String> order = {
+        "latestUploadedChapter": "desc",
+      };
+      Map<String, dynamic> finalOrderQuery = {};
+      order.forEach((key, value) {
+        finalOrderQuery["order[$key]"] = value;
+      });
+      mangaTitles = [];
+      mangaCoversFileName = [];
+      mangaAuthor = [];
+      mangaDescription = [];
+      mangaStatus = [];
+      List<dynamic> include = ["cover_art", "author"];
+      const String baseUrl = 'https://api.mangadex.org';
+      final response = await http.get(
+        Uri.parse('$baseUrl/manga').replace(queryParameters: {
+          ...{'ids[]': mangaIds, 'includes[]': include},
+          ...finalOrderQuery
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+      final responseData = jsonDecode(response.body);
+      final mangaList = responseData['data'] as List<dynamic>;
+      for (var manga in mangaList) {
+        final mangaRelation = manga['relationships'] as List<dynamic>;
+        final coverArt = mangaRelation
+            .firstWhere((relationship) => relationship['type'] == 'cover_art');
+        String coverFileName = coverArt["attributes"]["fileName"];
+        final authorsAttribute = mangaRelation
+            .firstWhere((relationship) => relationship['type'] == 'author');
+        String authorNames = authorsAttribute["attributes"]["name"];
+        setState(() {
+          mangaCoversFileName.add(coverFileName);
+          mangaAuthor.add(authorNames);
+        });
+      }
+      setState(() {
+        mangaTitles = mangaList.map((manga) {
+          if (manga["attributes"]["title"].containsKey("en")) {
+            return manga["attributes"]["title"]["en"];
+          } else {
+            return manga["attributes"]["title"]["ja-ro"];
+          }
+        }).toList();
+
+        mangaStatus = mangaList.map((manga) {
+          return manga["attributes"]["status"];
+        }).toList();
+
+        mangaDescription = mangaList.map((manga) {
+          return manga["attributes"]["description"]["en"];
+        }).toList();
+      });
+    } catch (e) {
+      print(e);
+    }
+
+    mangaCovers = [];
+    mangaCovers.length = mangaIds.length;
+    for (int i = 0; i < mangaIds.length; i++) {
+      final mangaId = mangaIds[i];
+      final fileName = mangaCoversFileName[i];
+      mangaCovers[i] = "https://uploads.mangadex.org/covers/$mangaId/$fileName";
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   getPopularManga() async {
     try {
       setState(() {
         isLoading = true;
       });
+
+      mangaIds = [];
       Map<String, String> order = {
         "followedCount": "desc",
       };
@@ -188,7 +306,10 @@ class _BrowsePageState extends State<BrowsePage>
     try {
       mangaTitles = [];
       mangaCoversFileName = [];
-      List<dynamic> include = ["cover_art"];
+      mangaAuthor = [];
+      mangaDescription = [];
+      mangaStatus = [];
+      List<dynamic> include = ["cover_art", "author"];
       const String baseUrl = 'https://api.mangadex.org';
       final response = await http.get(
         Uri.parse('$baseUrl/manga').replace(
@@ -202,15 +323,55 @@ class _BrowsePageState extends State<BrowsePage>
         final coverArt = mangaRelation
             .firstWhere((relationship) => relationship['type'] == 'cover_art');
         String coverFileName = coverArt["attributes"]["fileName"];
+        final authorsAttribute = mangaRelation
+            .firstWhere((relationship) => relationship['type'] == 'author');
+        String authorNames = authorsAttribute["attributes"]["name"];
         setState(() {
           mangaCoversFileName.add(coverFileName);
+          mangaAuthor.add(authorNames);
         });
       }
       setState(() {
-        mangaTitles = mangaList
-            .map((manga) => manga["attributes"]["title"]["en"])
-            .toList();
+        mangaTitles = mangaList.map((manga) {
+          if (manga["attributes"]["title"].containsKey("en")) {
+            return manga["attributes"]["title"]["en"];
+          } else {
+            return manga["attributes"]["title"]["ja-ro"];
+          }
+        }).toList();
+
+        mangaStatus = mangaList.map((manga) {
+          return manga["attributes"]["status"];
+        }).toList();
+
+        mangaDescription = mangaList.map((manga) {
+          return manga["attributes"]["description"]["en"];
+        }).toList();
       });
+
+      // List<dynamic> include = ["cover_art"];
+      // const String baseUrl = 'https://api.mangadex.org';
+      // final response = await http.get(
+      //   Uri.parse('$baseUrl/manga').replace(
+      //       queryParameters: {'ids[]': mangaIds, 'includes[]': include}),
+      //   headers: {'Content-Type': 'application/json'},
+      // );
+      // final responseData = jsonDecode(response.body);
+      // final mangaList = responseData['data'] as List<dynamic>;
+      // for (var manga in mangaList) {
+      //   final mangaRelation = manga['relationships'] as List<dynamic>;
+      //   final coverArt = mangaRelation
+      //       .firstWhere((relationship) => relationship['type'] == 'cover_art');
+      //   String coverFileName = coverArt["attributes"]["fileName"];
+      //   setState(() {
+      //     mangaCoversFileName.add(coverFileName);
+      //   });
+      // }
+      // setState(() {
+      //   mangaTitles = mangaList
+      //       .map((manga) => manga["attributes"]["title"]["en"])
+      //       .toList();
+      // });
     } catch (e) {
       print(e);
     }
@@ -273,7 +434,10 @@ class _BrowsePageState extends State<BrowsePage>
         ],
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.tertiary,))
+          ? Center(
+              child: CircularProgressIndicator(
+              color: Theme.of(context).colorScheme.tertiary,
+            ))
           : TabBarView(
               controller: controller,
               physics: NeverScrollableScrollPhysics(),
@@ -286,11 +450,21 @@ class _BrowsePageState extends State<BrowsePage>
                     mangaDescription: mangaDescription,
                     mangaStatus: mangaStatus,
                   ),
-                  LatestPage(),
+                  LatestPage(
+                    mangaId: mangaIds,
+                    mangaTitle: mangaTitles,
+                    mangaCover: mangaCovers,
+                    mangaAuthor: mangaAuthor,
+                    mangaDescription: mangaDescription,
+                    mangaStatus: mangaStatus,
+                  ),
                   FilterPage(
                     mangaId: mangaIds,
                     mangaTitle: mangaTitles,
                     mangaCover: mangaCovers,
+                    mangaAuthor: mangaAuthor,
+                    mangaDescription: mangaDescription,
+                    mangaStatus: mangaStatus,
                   )
                 ]),
     );
