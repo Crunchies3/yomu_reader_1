@@ -97,8 +97,27 @@ class _DetailScreenState extends State<DetailScreen> {
       appBar: AppBar(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
+          final chapter = mangaChapter[0];
+          final chapterId = chapter["id"];
+          var chapterTitle;
+          if (chapter["attributes"]["title"] == null) {
+            chapterTitle = chapter["attributes"]["chapter"];
+          } else {
+            chapterTitle = chapter["attributes"]["chapter"] +
+                " " +
+                chapter["attributes"]["title"];
+          }
+
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MangaContent(
+                    mangaTitle: widget.title,
+                    chapterId: chapterId,
+                    chapterTitle: chapterTitle,
+                  )));
         },
+
         label: Text(
           'Start',
           style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
