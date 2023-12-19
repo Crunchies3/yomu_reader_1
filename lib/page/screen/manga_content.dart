@@ -84,6 +84,7 @@ class _MangaContentState extends State<MangaContent> {
               floatHeaderSlivers: true,
               headerSliverBuilder: (context, innerBoxScrolled) => [
                 SliverAppBar(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   snap: true,
                   floating: true,
                   title: Column(
@@ -108,6 +109,17 @@ class _MangaContentState extends State<MangaContent> {
                     return buildImage(imageUrl);
                   }),
             ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(left: 30),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            FloatingActionButton(onPressed: () {}, child: Icon(Icons.skip_previous, color: Theme.of(context).colorScheme.inversePrimary,),),
+            Expanded(child: Container()),
+            FloatingActionButton(onPressed: (){},child: Icon(Icons.skip_next, color: Theme.of(context).colorScheme.inversePrimary,))
+          ],
+        ),
+      ),
     );
   }
 
