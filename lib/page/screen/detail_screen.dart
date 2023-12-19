@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:yomu_reader_1/components/description_text.dart';
 import 'package:http/http.dart' as http;
 import 'package:yomu_reader_1/page/screen/manga_content.dart';
@@ -28,10 +30,10 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-
   List<dynamic> mangaChapter = [];
   List<dynamic> revmangaChapter = [];
   var numberOfAvailableChapter = 0;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -46,13 +48,15 @@ class _DetailScreenState extends State<DetailScreen> {
 
   void onLoad() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
 
-      Map<String, String> order = {
-        "volume": "asc",
-        "chapter": "asc"
-      };
+      Map<String, String> order = {"volume": "asc", "chapter": "asc"};
 
-      List<dynamic> language = ["en",];
+      List<dynamic> language = [
+        "en",
+      ];
       Map<String, dynamic> finalOrderQuery = {};
       order.forEach((key, value) {
         finalOrderQuery["order[$key]"] = value;
@@ -61,16 +65,14 @@ class _DetailScreenState extends State<DetailScreen> {
       final id = widget.id;
       const String baseUrl = 'https://api.mangadex.org';
       final response = await http.get(
-        Uri.parse('$baseUrl/manga/$id/feed').replace(
-            queryParameters: {
-              ...{
-                "limit": "500",
-                "translatedLanguage[]":language,
-                "includeEmptyPages": "0"
-              },
-              ...finalOrderQuery
-            }
-        ),
+        Uri.parse('$baseUrl/manga/$id/feed').replace(queryParameters: {
+          ...{
+            "limit": "500",
+            "translatedLanguage[]": language,
+            "includeEmptyPages": "0"
+          },
+          ...finalOrderQuery
+        }),
         headers: {'Content-Type': 'application/json'},
       );
       final responseData = jsonDecode(response.body);
@@ -83,6 +85,9 @@ class _DetailScreenState extends State<DetailScreen> {
     } catch (e) {
       print(e);
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -92,9 +97,14 @@ class _DetailScreenState extends State<DetailScreen> {
       appBar: AppBar(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
+          SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
         },
-        label: Text('Start', style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),),
-        icon:  Icon(Icons.play_arrow, color: Theme.of(context).colorScheme.inversePrimary),
+        label: Text(
+          'Start',
+          style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
+        ),
+        icon: Icon(Icons.play_arrow,
+            color: Theme.of(context).colorScheme.inversePrimary),
         backgroundColor: Theme.of(context).colorScheme.tertiary,
       ),
       body: Scrollbar(
@@ -113,14 +123,13 @@ class _DetailScreenState extends State<DetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
-                        height: 150,
-                        width: 100,
-                        color: Colors.grey,
-                        child: Image.network(
-                          widget.image,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
+                          height: 150,
+                          width: 100,
+                          color: Colors.grey,
+                          child: CachedNetworkImage(
+                            imageUrl: widget.image,
+                            fit: BoxFit.fill,
+                          )),
                       SizedBox(
                         width: 20,
                       ),
@@ -142,9 +151,8 @@ class _DetailScreenState extends State<DetailScreen> {
                               ),
                               Text(
                                 widget.author,
-                                style: TextStyle(fontSize: 12,
-                                  color: Colors.grey
-                                ),
+                                style:
+                                    TextStyle(fontSize: 12, color: Colors.grey),
                               ),
                             ]),
                             SizedBox(
@@ -161,8 +169,8 @@ class _DetailScreenState extends State<DetailScreen> {
                                 ),
                                 Text(
                                   widget.status,
-                                  style: TextStyle(fontSize: 12,
-                                  color: Colors.grey),
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey),
                                 )
                               ],
                             ),
@@ -180,8 +188,9 @@ class _DetailScreenState extends State<DetailScreen> {
                       Expanded(
                           child: FilledButton(
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(
-                                    Theme.of(context).colorScheme.primary),
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Theme.of(context).colorScheme.primary),
                               ),
                               onPressed: () {},
                               child: Padding(
@@ -212,44 +221,55 @@ class _DetailScreenState extends State<DetailScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
-                  ListView.builder(
+                  isLoading
+                      ? Center(
+                          child: Column(
+                            children: [
+                              SizedBox(height: 150,),
+                              CircularProgressIndicator(
+                              color: Theme.of(context).colorScheme.tertiary,
+                                                      ),
+                            ],
+                          ))
+                      : ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: mangaChapter.length,
+                          itemBuilder: (context, index) {
+                            final chapter = revmangaChapter[index];
+                            final chapterId = chapter["id"];
+                            var publishedAt =
+                                chapter["attributes"]["publishAt"];
+                            var chapterTitle;
+                            if (chapter["attributes"]["title"] == null) {
+                              chapterTitle = chapter["attributes"]["chapter"];
+                            } else {
+                              chapterTitle = chapter["attributes"]["chapter"] +
+                                  " " +
+                                  chapter["attributes"]["title"];
+                            }
 
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: mangaChapter.length,
-                    itemBuilder: (context, index) {
-
-                      final chapter = revmangaChapter[index];
-                      final chapterId = chapter["id"];
-                      var publishedAt = chapter["attributes"]["publishAt"];
-                      var chapterTitle;
-                      if(chapter["attributes"]["title"] == null) {
-                        chapterTitle = chapter["attributes"]["chapter"];
-                      }else {
-                        chapterTitle = chapter["attributes"]["chapter"] + " " + chapter["attributes"]["title"];
-                      }
-
-
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => MangaContent(
-                                    mangaTitle: widget.title, chapterId: chapterId,
-                                    chapterTitle: chapterTitle,
-                                  )
-                              )
-                          );
-                        },
-                        title: Text("Chapter $chapterTitle"),
-                        subtitle: Text(publishedAt.substring(0,10), style: TextStyle(
-                          fontSize: 11, color: Colors.grey[400]
-                        ),),
-                      );
-                    },
-                  ),
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => MangaContent(
+                                              mangaTitle: widget.title,
+                                              chapterId: chapterId,
+                                              chapterTitle: chapterTitle,
+                                            )));
+                              },
+                              title: Text("Chapter $chapterTitle"),
+                              subtitle: Text(
+                                publishedAt.substring(0, 10),
+                                style: TextStyle(
+                                    fontSize: 11, color: Colors.grey[400]),
+                              ),
+                            );
+                          },
+                        ),
                 ],
               ),
             ),

@@ -106,11 +106,6 @@ class PopularPageState extends State<PopularPage> {
             child: CachedNetworkImage(
               imageUrl: imageUrl,
               fit: BoxFit.fill,
-              placeholder: (BuildContext context, String url) => Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).colorScheme.tertiary,
-                ),
-              ),
               errorWidget: (BuildContext context, String url, dynamic error) =>
               const Icon(Icons.error),
             ),
