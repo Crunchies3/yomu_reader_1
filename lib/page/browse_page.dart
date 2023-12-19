@@ -26,7 +26,7 @@ class _BrowsePageState extends State<BrowsePage>
   List<dynamic> mangaAuthor = [];
   List<dynamic> mangaStatus = [];
   List<dynamic> mangaDescription = [];
-  bool isFilterAccessible = false;
+  List<bool> isFilterAccessible = [true, true, false];
 
   bool isLoading = true;
 
@@ -42,10 +42,10 @@ class _BrowsePageState extends State<BrowsePage>
   }
 
   onTap() {
-    if(isFilterAccessible){
+    if (isFilterAccessible[controller.index]) {
       int index = controller.previousIndex;
       setState(() {
-        controller.index=index;
+        controller.index = index;
       });
     }
   }
@@ -55,11 +55,19 @@ class _BrowsePageState extends State<BrowsePage>
     super.initState();
     controller = TabController(length: 3, vsync: this);
     onLoad();
+    isFilterAccessible[2] = false;
+
     controller.addListener(() {
-      setState(() {
-        onTap();
-        onLoad();
-      });
+      if (!isFilterAccessible[controller.index]) {
+        int index = controller.previousIndex;
+        setState(() {
+          controller.index = index;
+        });
+      } else {
+        setState(() {
+          onLoad();
+        });
+      }
     });
   }
 
@@ -411,6 +419,9 @@ class _BrowsePageState extends State<BrowsePage>
                     this.cusSearchBar = TextField(
                       onSubmitted: (value) {
                         searchManga(value);
+                        setState(() {
+                          isFilterAccessible[2] = true;
+                        });
                         controller.animateTo(2);
                       },
                       cursorColor: Theme.of(context).colorScheme.inversePrimary,
