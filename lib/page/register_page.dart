@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:yomu_reader_1/components/my_button.dart';
 import 'package:yomu_reader_1/components/my_textfield.dart';
+import 'package:yomu_reader_1/services/firestore.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -17,6 +18,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
+  final FireStoreService fireStoreService = FireStoreService();
+
+
   // login method
   void signUp() async {
     showDialog(
@@ -28,14 +32,20 @@ class _RegisterPageState extends State<RegisterPage> {
         });
 
     try {
-
-      if(passwordController.text == confirmPasswordController.text) {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      if (passwordController.text == confirmPasswordController.text) {
+        UserCredential? userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text,
         );
-        Navigator.pop(context);
 
+        createUserDocument(userCredential);
+
+
+
+
+
+        Navigator.pop(context);
       } else {
         Navigator.pop(context);
         showErrorMess("Password don't match!");
@@ -43,6 +53,12 @@ class _RegisterPageState extends State<RegisterPage> {
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       showErrorMess(e.code);
+    }
+  }
+
+  Future<void> createUserDocument(UserCredential? userCredential) async {
+    if(userCredential != null && userCredential.user != null) {
+      await fireStoreService.addUser(userCredential, usernameController.text);
     }
   }
 
@@ -54,9 +70,7 @@ class _RegisterPageState extends State<RegisterPage> {
           backgroundColor: Theme.of(context).colorScheme.background,
           title: Text(message,
               style: TextStyle(
-                  color: Theme.of(context).colorScheme.tertiary,
-                  fontSize: 18
-              )),
+                  color: Theme.of(context).colorScheme.tertiary, fontSize: 18)),
         );
       },
     );
@@ -92,9 +106,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         Text(
                           "Register new account",
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20
-                          ),
+                              fontWeight: FontWeight.bold, fontSize: 20),
                         ),
                         const SizedBox(height: 40),
                         Row(
@@ -103,7 +115,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             Text(
                               "Email",
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.inversePrimary,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -124,7 +138,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             Text(
                               "Username",
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.inversePrimary,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -146,7 +162,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             Text(
                               "Password",
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.inversePrimary,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -167,7 +185,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             Text(
                               "Confirm Password",
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.inversePrimary,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -197,7 +217,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             Text(
                               "Already have an account?",
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.inversePrimary),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary),
                             ),
                             GestureDetector(
                               onTap: widget.onTap,
@@ -205,8 +227,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 " Sign In Here!",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.tertiary
-                                ),
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary),
                               ),
                             )
                           ],
