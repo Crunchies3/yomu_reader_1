@@ -99,16 +99,6 @@ class _DetailScreenState extends State<DetailScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          final chapter = revmangaChapter[revmangaChapter.length-1];
-          final chapterId = chapter["id"];
-          var chapterTitle;
-          if (chapter["attributes"]["title"] == null) {
-            chapterTitle = chapter["attributes"]["chapter"];
-          } else {
-            chapterTitle = chapter["attributes"]["chapter"] +
-                " " +
-                chapter["attributes"]["title"];
-          }
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -258,7 +248,6 @@ class _DetailScreenState extends State<DetailScreen> {
                           itemCount: mangaChapter.length,
                           itemBuilder: (context, index) {
                             final chapter = revmangaChapter[index];
-                            final chapterId = chapter["id"];
                             var publishedAt =
                                 chapter["attributes"]["publishAt"];
                             var chapterTitle;
