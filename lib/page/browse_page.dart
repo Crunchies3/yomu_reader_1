@@ -27,6 +27,8 @@ class _BrowsePageState extends State<BrowsePage>
   List<dynamic> mangaStatus = [];
   List<dynamic> mangaDescription = [];
 
+  bool isLoading = true;
+
   onLoad() {
     switch (controller.index) {
       case 0:
@@ -54,6 +56,9 @@ class _BrowsePageState extends State<BrowsePage>
 
   getPopularManga() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       Map<String, String> order = {
         "followedCount": "desc",
       };
@@ -101,14 +106,10 @@ class _BrowsePageState extends State<BrowsePage>
       List<dynamic> include = ["cover_art", "author"];
       const String baseUrl = 'https://api.mangadex.org';
       final response = await http.get(
-        Uri.parse('$baseUrl/manga').replace(
-            queryParameters: {
-              ...{'ids[]': mangaIds,
-                'includes[]': include
-              },
-              ...finalOrderQuery
-            }
-        ),
+        Uri.parse('$baseUrl/manga').replace(queryParameters: {
+          ...{'ids[]': mangaIds, 'includes[]': include},
+          ...finalOrderQuery
+        }),
         headers: {'Content-Type': 'application/json'},
       );
       final responseData = jsonDecode(response.body);
@@ -142,12 +143,10 @@ class _BrowsePageState extends State<BrowsePage>
         mangaDescription = mangaList.map((manga) {
           return manga["attributes"]["description"]["en"];
         }).toList();
-
       });
     } catch (e) {
       print(e);
     }
-
 
     mangaCovers = [];
     mangaCovers.length = mangaIds.length;
@@ -156,6 +155,10 @@ class _BrowsePageState extends State<BrowsePage>
       final fileName = mangaCoversFileName[i];
       mangaCovers[i] = "https://uploads.mangadex.org/covers/$mangaId/$fileName";
     }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -269,25 +272,27 @@ class _BrowsePageState extends State<BrowsePage>
           IconButton(onPressed: () {}, icon: const Icon(Icons.grid_view_sharp)),
         ],
       ),
-      body: TabBarView(
-          controller: controller,
-          physics: NeverScrollableScrollPhysics(),
-          children: [
-            PopularPage(
-              mangaId: mangaIds,
-              mangaTitle: mangaTitles,
-              mangaCover: mangaCovers,
-              mangaAuthor: mangaAuthor,
-              mangaDescription: mangaDescription,
-              mangaStatus: mangaStatus,
-            ),
-            LatestPage(),
-            FilterPage(
-              mangaId: mangaIds,
-              mangaTitle: mangaTitles,
-              mangaCover: mangaCovers,
-            )
-          ]),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.tertiary,))
+          : TabBarView(
+              controller: controller,
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                  PopularPage(
+                    mangaId: mangaIds,
+                    mangaTitle: mangaTitles,
+                    mangaCover: mangaCovers,
+                    mangaAuthor: mangaAuthor,
+                    mangaDescription: mangaDescription,
+                    mangaStatus: mangaStatus,
+                  ),
+                  LatestPage(),
+                  FilterPage(
+                    mangaId: mangaIds,
+                    mangaTitle: mangaTitles,
+                    mangaCover: mangaCovers,
+                  )
+                ]),
     );
   }
 }
