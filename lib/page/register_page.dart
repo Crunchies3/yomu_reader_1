@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:yomu_reader_1/components/my_button.dart';
 import 'package:yomu_reader_1/components/my_textfield.dart';
-import 'package:yomu_reader_1/services/firestore.dart';
+
+import '../my_classes/services/firestore.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;

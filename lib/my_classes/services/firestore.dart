@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FireStoreService {
-
   final CollectionReference users = FirebaseFirestore.instance.collection('users');
   final CollectionReference library = FirebaseFirestore.instance.collection('manga_library');
   final CollectionReference history = FirebaseFirestore.instance.collection('manga_history');
@@ -14,4 +13,12 @@ class FireStoreService {
       'username':username
     });
   }
+
+  Future<DocumentSnapshot<Object?>> getCurrentUserDetails() async{
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    return await users.doc(currentUser!.email).get();
+  }
+
+
+
 }
