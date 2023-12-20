@@ -20,8 +20,15 @@ class FireStoreService {
     return await users.doc(currentUser!.email).get();
   }
 
+  Stream<QuerySnapshot<Map<String, dynamic>>> getMangaHistory()  {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    return history.doc(currentUser!.email).collection('manga').snapshots();
+  }
+
+
+
   Future<void> addMangaToHistory(String userEmail, String mangaId, currentChap,
-      chapterIds, author, description, status, mangaTitle, chapterTitle) {
+      chapterIds, author, description, status, mangaTitle, chapterTitle, url) {
     return history.doc(userEmail).collection('manga').doc(mangaId).set({
       'chapter_ids[]': chapterIds,
       'date_opened': DateTime.timestamp(),
@@ -31,7 +38,8 @@ class FireStoreService {
       'manga_title': mangaTitle,
       'recent_chapter': currentChap,
       'chapter_title': "Chapter $chapterTitle",
-      'manga_id': mangaId
+      'manga_id': mangaId,
+      'cover_link' : url
     });
   }
 }

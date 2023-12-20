@@ -14,6 +14,7 @@ class MangaContent extends StatefulWidget {
   final String author;
   final String status;
   final String desc;
+  final String image;
 
   const MangaContent(
       {super.key,
@@ -23,7 +24,7 @@ class MangaContent extends StatefulWidget {
       required this.mangaId,
       required this.author,
       required this.status,
-      required this.desc});
+      required this.desc, required this.image});
 
   @override
   State<MangaContent> createState() => _MangaContentState();
@@ -204,6 +205,7 @@ class _MangaContentState extends State<MangaContent> {
                         widget.status,
                         widget.mangaTitle,
                         chapterTitle,
+                        widget.image
                       );
                     });
                   });
@@ -235,6 +237,7 @@ class _MangaContentState extends State<MangaContent> {
                         widget.status,
                         widget.mangaTitle,
                         chapterTitle,
+                        widget.image
                       );
                     });
                   },

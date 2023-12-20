@@ -100,6 +100,31 @@ class _DetailScreenState extends State<DetailScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
+          final FireStoreService fireStoreService =
+          FireStoreService();
+
+          final chapter = revmangaChapter[revmangaChapter.length - 1];
+          var chapterTitle;
+          if (chapter["attributes"]["title"] == null) {
+            chapterTitle = chapter["attributes"]["chapter"];
+          } else {
+            chapterTitle = chapter["attributes"]["chapter"] +
+                " " +
+                chapter["attributes"]["title"];
+          }
+
+          fireStoreService.addMangaToHistory(
+              globals.email,
+              widget.id,
+              revmangaChapter.length - 1,
+              revmangaChapter,
+              widget.author,
+              widget.desc,
+              widget.status,
+              widget.title,
+              chapterTitle,
+              widget.image);
+
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -111,6 +136,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         author: widget.author,
                         status: widget.status,
                         desc: widget.desc,
+                        image: widget.image,
                       )));
         },
         label: Text(
@@ -271,16 +297,16 @@ class _DetailScreenState extends State<DetailScreen> {
                                     FireStoreService();
 
                                 fireStoreService.addMangaToHistory(
-                                  globals.email,
-                                  widget.id,
-                                  index,
-                                  revmangaChapter,
-                                  widget.author,
-                                  widget.desc,
-                                  widget.status,
-                                  widget.title,
-                                  chapterTitle,
-                                );
+                                    globals.email,
+                                    widget.id,
+                                    index,
+                                    revmangaChapter,
+                                    widget.author,
+                                    widget.desc,
+                                    widget.status,
+                                    widget.title,
+                                    chapterTitle,
+                                    widget.image);
 
                                 Navigator.push(
                                     context,
@@ -293,6 +319,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                               author: widget.author,
                                               status: widget.status,
                                               desc: widget.desc,
+                                              image: widget.image,
                                             )));
                               },
                               title: Text("Chapter $chapterTitle"),

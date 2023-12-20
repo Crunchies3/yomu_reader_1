@@ -24,6 +24,7 @@ class _MorePageState extends State<MorePage> {
       body: FutureBuilder<DocumentSnapshot<Object?>>(
         future: fireStoreService.getCurrentUserDetails(),
         builder: (context, snapshot) {
+
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
