@@ -10,7 +10,6 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-
   final FireStoreService fireStoreService = FireStoreService();
   @override
   Widget build(BuildContext context) {
@@ -20,42 +19,44 @@ class _HistoryPageState extends State<HistoryPage> {
           title: Text("History"),
         ),
         body: Padding(
-          padding: EdgeInsets.all(5.0),
-          child: StreamBuilder(
-            stream: fireStoreService.getMangaHistory(),
-            builder: (context, snapshot) {
-              
-              if(snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if(snapshot.data == null) {
-                return const Text("No Data");
-              }
-
-              final mangas = snapshot.data!.docs;
-
-              return ListView.builder(
-                itemCount: mangas.length,
-                itemBuilder: (context, index){
-                  final manga = mangas[index];
-
-                  return ListTile(
-                    title: Text(manga['manga_title']),
+            padding: EdgeInsets.all(5.0),
+            child: StreamBuilder(
+              stream: fireStoreService.getMangaHistory(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-              );
+                }
+                if (snapshot.data == null) {
+                  return const Text("No Data");
+                }
 
+                final mangas = snapshot.data!.docs;
 
+                return ListView.builder(
+                  itemCount: mangas.length,
+                  itemBuilder: (context, index) {
+                    final manga = mangas[index];
 
-
-
-
-
-            },
-          )
-        )
-    );
+                    return ListTile(
+                      leading: Container(
+                        color: Theme.of(context).colorScheme.primary,
+                          height: 100,
+                          width: 40,
+                          child: Image.network(
+                        manga['cover_link'],
+                            fit: BoxFit.fill,
+                      )),
+                      title: Text(manga['manga_title']),
+                      subtitle: Text(
+                        manga['chapter_title'],
+                        style: TextStyle(fontSize: 11, color: Colors.grey[400]),
+                      ),
+                    );
+                  },
+                );
+              },
+            )));
   }
 }
