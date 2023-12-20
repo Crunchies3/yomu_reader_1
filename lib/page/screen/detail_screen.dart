@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:yomu_reader_1/components/description_text.dart';
 import 'package:http/http.dart' as http;
+import 'package:yomu_reader_1/my_classes/services/firestore.dart';
 import 'package:yomu_reader_1/page/screen/manga_content.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -262,6 +263,11 @@ class _DetailScreenState extends State<DetailScreen> {
                             return ListTile(
                               contentPadding: EdgeInsets.zero,
                               onTap: () {
+
+                                final FireStoreService fireStoreService = FireStoreService();
+
+                                fireStoreService.addMangaToHistory("monkey@gmail.com", widget.id);
+
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
