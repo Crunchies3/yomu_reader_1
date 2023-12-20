@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yomu_reader_1/my_classes/services/firestore.dart';
+import 'package:yomu_reader_1/page/screen/detail_screen.dart';
+import 'package:yomu_reader_1/page/screen/manga_content.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -40,14 +42,46 @@ class _HistoryPageState extends State<HistoryPage> {
                     final manga = mangas[index];
 
                     return ListTile(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MangaContent(
+                                mangaId: manga['manga_id'],
+                                mangaTitle: manga['manga_title'],
+                                mangaChapters: manga['chapter_ids'],
+                                index: manga['recent_chapter'],
+                                author: manga['manga_author'],
+                                status: manga['manga_status'],
+                                desc: manga['manga_description'],
+                                image: manga['cover_link'],
+                              )
+                          )
+                        );
+                      },
                       leading: Container(
-                        color: Theme.of(context).colorScheme.primary,
+                          color: Theme.of(context).colorScheme.primary,
                           height: 100,
                           width: 40,
-                          child: Image.network(
-                        manga['cover_link'],
-                            fit: BoxFit.fill,
-                      )),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => DetailScreen(
+                                            title: manga['manga_title'],
+                                            id: manga['manga_id'],
+                                            author: manga['manga_author'],
+                                            status: manga['manga_status'],
+                                            desc: manga['manga_description'],
+                                            image: manga['cover_link'],
+                                          )));
+                            },
+                            child: Image.network(
+                              manga['cover_link'],
+                              fit: BoxFit.fill,
+                            ),
+                          )),
                       title: Text(manga['manga_title']),
                       subtitle: Text(
                         manga['chapter_title'],

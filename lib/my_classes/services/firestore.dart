@@ -30,7 +30,7 @@ class FireStoreService {
   Future<void> addMangaToHistory(String userEmail, String mangaId, currentChap,
       chapterIds, author, description, status, mangaTitle, chapterTitle, url) {
     return history.doc(userEmail).collection('manga').doc(mangaId).set({
-      'chapter_ids[]': chapterIds,
+      'chapter_ids': chapterIds,
       'date_opened': DateTime.timestamp(),
       'manga_author': author,
       'manga_description': description,
