@@ -41,6 +41,10 @@ class FireStoreService {
     });
   }
 
+  Future<void> removeMangaFromLibrary(String userEmail, String mangaId) {
+    return library.doc(userEmail).collection('manga').doc(mangaId).delete();
+  }
+
 
 
   Future<void> addMangaToHistory(String userEmail, String mangaId, currentChap,

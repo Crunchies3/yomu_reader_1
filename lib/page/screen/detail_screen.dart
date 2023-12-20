@@ -35,6 +35,7 @@ class _DetailScreenState extends State<DetailScreen> {
   List<dynamic> revmangaChapter = [];
   var numberOfAvailableChapter = 0;
   bool isLoading = true;
+  bool isAddedToLibrary = false;
 
   @override
   void initState() {
@@ -219,7 +220,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     ],
                   ),
                   SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -235,36 +236,59 @@ class _DetailScreenState extends State<DetailScreen> {
                                 final FireStoreService fireStoreService =
                                     FireStoreService();
 
-                                fireStoreService.addMangaToLibrary(
-                                    globals.email,
-                                    widget.id,
-                                    0,
-                                    revmangaChapter,
-                                    widget.author,
-                                    widget.desc,
-                                    widget.status,
-                                    widget.title,
-                                    "",
-                                    widget.image);
+                                if (!isAddedToLibrary) {
+                                  fireStoreService.addMangaToLibrary(
+                                      globals.email,
+                                      widget.id,
+                                      0,
+                                      revmangaChapter,
+                                      widget.author,
+                                      widget.desc,
+                                      widget.status,
+                                      widget.title,
+                                      "",
+                                      widget.image);
+                                  setState(() {
+                                    isAddedToLibrary = true;
+                                  });
+                                } else {
+                                  fireStoreService.removeMangaFromLibrary(
+                                      globals.email, widget.id);
+                                  setState(() {
+                                    isAddedToLibrary = false;
+                                  });
+                                }
                               },
                               child: Padding(
                                 padding: EdgeInsets.all(6),
                                 child: Column(children: [
-                                  Icon(
-                                    Icons.favorite_border,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .inversePrimary,
-                                  ),
-                                  Text("Add to library",
-                                      style: TextStyle(
-                                          color: Colors.grey, fontSize: 12)),
+                                  isAddedToLibrary
+                                      ? Icon(
+                                          Icons.favorite,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        )
+                                      : Icon(
+                                          Icons.favorite_border,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .inversePrimary,
+                                        ),
+                                  isAddedToLibrary
+                                      ? Text("Added To Library",
+                                          style: TextStyle(
+                                              color: Colors.grey, fontSize: 12))
+                                      : Text("Add to library",
+                                          style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12)),
                                 ]),
                               ))),
                     ],
                   ),
                   SizedBox(
-                    height: 10,
+                    height: 15,
                   ),
                   Container(
                       child: DescriptionText(
