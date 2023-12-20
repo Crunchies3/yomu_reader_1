@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:yomu_reader_1/components/description_text.dart';
 import 'package:http/http.dart' as http;
 import 'package:yomu_reader_1/my_classes/services/firestore.dart';
 import 'package:yomu_reader_1/page/screen/manga_content.dart';
+import 'package:yomu_reader_1/library/globals.dart' as globals;
 
 class DetailScreen extends StatefulWidget {
   final String title;
@@ -104,9 +104,13 @@ class _DetailScreenState extends State<DetailScreen> {
               context,
               MaterialPageRoute(
                   builder: (context) => MangaContent(
+                        mangaId: widget.id,
                         mangaTitle: widget.title,
                         mangaChapters: revmangaChapter,
-                        index: revmangaChapter.length-1,
+                        index: revmangaChapter.length - 1,
+                        author: widget.author,
+                        status: widget.status,
+                        desc: widget.desc,
                       )));
         },
         label: Text(
@@ -263,18 +267,32 @@ class _DetailScreenState extends State<DetailScreen> {
                             return ListTile(
                               contentPadding: EdgeInsets.zero,
                               onTap: () {
+                                final FireStoreService fireStoreService =
+                                    FireStoreService();
 
-                                final FireStoreService fireStoreService = FireStoreService();
-
-                                fireStoreService.addMangaToHistory("monkey@gmail.com", widget.id);
+                                fireStoreService.addMangaToHistory(
+                                  globals.email,
+                                  widget.id,
+                                  index,
+                                  revmangaChapter,
+                                  widget.author,
+                                  widget.desc,
+                                  widget.status,
+                                  widget.title,
+                                  chapterTitle,
+                                );
 
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => MangaContent(
+                                              mangaId: widget.id,
                                               mangaTitle: widget.title,
                                               mangaChapters: revmangaChapter,
                                               index: index,
+                                              author: widget.author,
+                                              status: widget.status,
+                                              desc: widget.desc,
                                             )));
                               },
                               title: Text("Chapter $chapterTitle"),

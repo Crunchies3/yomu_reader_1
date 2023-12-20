@@ -3,17 +3,27 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:yomu_reader_1/my_classes/services/firestore.dart';
+import 'package:yomu_reader_1/library/globals.dart' as globals;
 
 class MangaContent extends StatefulWidget {
+  final String mangaId;
   final String mangaTitle;
   final List<dynamic> mangaChapters;
   final int index;
+  final String author;
+  final String status;
+  final String desc;
 
   const MangaContent(
       {super.key,
       required this.mangaChapters,
       required this.mangaTitle,
-      required this.index});
+      required this.index,
+      required this.mangaId,
+      required this.author,
+      required this.status,
+      required this.desc});
 
   @override
   State<MangaContent> createState() => _MangaContentState();
@@ -35,7 +45,8 @@ class _MangaContentState extends State<MangaContent> {
     if (widget.mangaChapters[currentChap]["attributes"]["title"] == null) {
       chapterTitle = widget.mangaChapters[currentChap]["attributes"]["chapter"];
     } else {
-      chapterTitle = widget.mangaChapters[currentChap]["attributes"]["chapter"] +
+      chapterTitle = widget.mangaChapters[currentChap]["attributes"]
+              ["chapter"] +
           " " +
           widget.mangaChapters[currentChap]["attributes"]["title"];
     }
@@ -93,7 +104,8 @@ class _MangaContentState extends State<MangaContent> {
     if (widget.mangaChapters[currentChap]["attributes"]["title"] == null) {
       chapterTitle = widget.mangaChapters[currentChap]["attributes"]["chapter"];
     } else {
-      chapterTitle = widget.mangaChapters[currentChap]["attributes"]["chapter"] +
+      chapterTitle = widget.mangaChapters[currentChap]["attributes"]
+              ["chapter"] +
           " " +
           widget.mangaChapters[currentChap]["attributes"]["title"];
     }
@@ -134,7 +146,10 @@ class _MangaContentState extends State<MangaContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
-          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.tertiary,))
+          ? Center(
+              child: CircularProgressIndicator(
+              color: Theme.of(context).colorScheme.tertiary,
+            ))
           : NestedScrollView(
               floatHeaderSlivers: true,
               headerSliverBuilder: (context, innerBoxScrolled) => [
@@ -173,10 +188,23 @@ class _MangaContentState extends State<MangaContent> {
               visible: isFirst(),
               child: FloatingActionButton(
                 onPressed: () {
+                  final FireStoreService fireStoreService =
+                  FireStoreService();
                   setState(() {
                     setState(() {
                       var index = ++currentChap;
                       refreshState(index);
+                      fireStoreService.addMangaToHistory(
+                        globals.email,
+                        widget.mangaId,
+                        index,
+                        widget.mangaChapters,
+                        widget.author,
+                        widget.desc,
+                        widget.status,
+                        widget.mangaTitle,
+                        chapterTitle,
+                      );
                     });
                   });
                 },
@@ -191,9 +219,23 @@ class _MangaContentState extends State<MangaContent> {
               visible: isLatest(),
               child: FloatingActionButton(
                   onPressed: () {
+                    final FireStoreService fireStoreService =
+                        FireStoreService();
                     setState(() {
                       var index = --currentChap;
                       refreshState(index);
+
+                      fireStoreService.addMangaToHistory(
+                        globals.email,
+                        widget.mangaId,
+                        index,
+                        widget.mangaChapters,
+                        widget.author,
+                        widget.desc,
+                        widget.status,
+                        widget.mangaTitle,
+                        chapterTitle,
+                      );
                     });
                   },
                   child: Icon(
@@ -208,13 +250,17 @@ class _MangaContentState extends State<MangaContent> {
   }
 
   bool isLatest() {
-    if(currentChap == 0) return false;
-    else return true;
+    if (currentChap == 0)
+      return false;
+    else
+      return true;
   }
 
   bool isFirst() {
-    if(currentChap == widget.mangaChapters.length-1) return false;
-    else return true;
+    if (currentChap == widget.mangaChapters.length - 1)
+      return false;
+    else
+      return true;
   }
 
   Widget buildImage(String imageUrl) {

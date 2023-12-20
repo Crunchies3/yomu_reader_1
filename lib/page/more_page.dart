@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../my_classes/services/firestore.dart';
+import '../library/globals.dart' as globals;
 
 class MorePage extends StatefulWidget {
   const MorePage({super.key});
@@ -33,6 +33,8 @@ class _MorePageState extends State<MorePage> {
           } else if (snapshot.hasData) {
             Map<String, dynamic>? user =
                 snapshot.data!.data() as Map<String, dynamic>?;
+
+            globals.email = user!['email'];
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -66,7 +68,7 @@ class _MorePageState extends State<MorePage> {
                   SizedBox(
                     height: 10,
                   ),
-                  Text(user['email'],
+                  Text(globals.email,
                     style: TextStyle(
                       color: Colors.grey[600]
                     ),
