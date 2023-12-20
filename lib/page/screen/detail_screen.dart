@@ -100,8 +100,7 @@ class _DetailScreenState extends State<DetailScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          final FireStoreService fireStoreService =
-          FireStoreService();
+          final FireStoreService fireStoreService = FireStoreService();
 
           final chapter = revmangaChapter[revmangaChapter.length - 1];
           var chapterTitle;
@@ -232,7 +231,22 @@ class _DetailScreenState extends State<DetailScreen> {
                                     MaterialStateProperty.all<Color>(
                                         Theme.of(context).colorScheme.primary),
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                final FireStoreService fireStoreService =
+                                    FireStoreService();
+
+                                fireStoreService.addMangaToLibrary(
+                                    globals.email,
+                                    widget.id,
+                                    0,
+                                    revmangaChapter,
+                                    widget.author,
+                                    widget.desc,
+                                    widget.status,
+                                    widget.title,
+                                    "",
+                                    widget.image);
+                              },
                               child: Padding(
                                 padding: EdgeInsets.all(6),
                                 child: Column(children: [

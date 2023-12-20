@@ -25,6 +25,22 @@ class FireStoreService {
     return history.doc(currentUser!.email).collection('manga').snapshots();
   }
 
+  Future<void> addMangaToLibrary(String userEmail, String mangaId, currentChap,
+      chapterIds, author, description, status, mangaTitle, chapterTitle, url) {
+    return library.doc(userEmail).collection('manga').doc(mangaId).set({
+      'chapter_ids': chapterIds,
+      'date_opened': DateTime.timestamp(),
+      'manga_author': author,
+      'manga_description': description,
+      'manga_status': status,
+      'manga_title': mangaTitle,
+      'recent_chapter': currentChap,
+      'chapter_title': "Chapter $chapterTitle",
+      'manga_id': mangaId,
+      'cover_link' : url
+    });
+  }
+
 
 
   Future<void> addMangaToHistory(String userEmail, String mangaId, currentChap,
