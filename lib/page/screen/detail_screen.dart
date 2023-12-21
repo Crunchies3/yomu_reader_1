@@ -38,16 +38,23 @@ class _DetailScreenState extends State<DetailScreen> {
   bool isLoading = true;
   bool isAddedToLibrary = false;
   bool nagLoading = true;
+  var currChapter = 0;
+  bool isInHistory = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => getChapterId());
     onLoad();
-    checKIfOpened();
+    checKIfInLibrary();
+    checkIfInHistory();
   }
 
-  checKIfOpened() async {
+  checkIfInHistory() async {
+    isInHistory = await fireStoreService.isInHistory(widget.id);
+  }
+
+  checKIfInLibrary() async {
     setState(() {
       nagLoading = true;
     });
@@ -97,9 +104,23 @@ class _DetailScreenState extends State<DetailScreen> {
       });
       numberOfAvailableChapter = mangaChapter.length;
       revmangaChapter = mangaChapter.reversed.toList();
+
+
+
+      if(isInHistory) {
+        setState(() async {
+          currChapter =  await fireStoreService.gettCurrChapter(widget.id);
+
+        });
+      } else {
+        setState(() {
+          currChapter = revmangaChapter.length - 1;
+        });
+      }
     } catch (e) {
       print(e);
     }
+
     setState(() {
       isLoading = false;
     });
@@ -118,7 +139,7 @@ class _DetailScreenState extends State<DetailScreen> {
         onPressed: () {
           final FireStoreService fireStoreService = FireStoreService();
 
-          final chapter = revmangaChapter[revmangaChapter.length - 1];
+          final chapter = revmangaChapter[currChapter];
           var chapterTitle;
           if (chapter["attributes"]["title"] == null) {
             chapterTitle = chapter["attributes"]["chapter"];
@@ -131,7 +152,7 @@ class _DetailScreenState extends State<DetailScreen> {
           fireStoreService.addMangaToHistory(
               globals.email,
               widget.id,
-              revmangaChapter.length - 1,
+              currChapter,
               revmangaChapter,
               widget.author,
               widget.desc,
@@ -147,17 +168,24 @@ class _DetailScreenState extends State<DetailScreen> {
                         mangaId: widget.id,
                         mangaTitle: widget.title,
                         mangaChapters: revmangaChapter,
-                        index: revmangaChapter.length - 1,
+                        index: currChapter,
                         author: widget.author,
                         status: widget.status,
                         desc: widget.desc,
                         image: widget.image,
                       )));
         },
-        label: Text(
-          'Start',
-          style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
-        ),
+        label: isInHistory
+            ? Text(
+                'Resume',
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.inversePrimary),
+              )
+            : Text(
+                'Start',
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.inversePrimary),
+              ),
         icon: Icon(Icons.play_arrow,
             color: Theme.of(context).colorScheme.inversePrimary),
         backgroundColor: Theme.of(context).colorScheme.tertiary,
@@ -249,7 +277,7 @@ class _DetailScreenState extends State<DetailScreen> {
                               snapshot.data!.data() as Map<String, dynamic>?;
                           var naasHistory = false;
 
-                          if(snapshot.hasData) {
+                          if (snapshot.hasData) {
                             naasHistory = true;
                           } else {
                             naasHistory = false;
@@ -283,7 +311,9 @@ class _DetailScreenState extends State<DetailScreen> {
                                       fireStoreService.addMangaToLibrary(
                                           globals.email,
                                           widget.id,
-                                          naasHistory ? 0:manga!['recent_chapter'],
+                                          naasHistory
+                                              ? 0
+                                              : manga!['recent_chapter'],
                                           revmangaChapter,
                                           widget.author,
                                           widget.desc,
