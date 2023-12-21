@@ -25,6 +25,13 @@ class FireStoreService {
     return history.doc(currentUser!.email).collection('manga').snapshots();
   }
 
+  Stream<QuerySnapshot<Map<String, dynamic>>> getMangaLibrary()  {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    return library.doc(currentUser!.email).collection('manga').snapshots();
+  }
+
+
+
   Future<void> addMangaToLibrary(String userEmail, String mangaId, currentChap,
       chapterIds, author, description, status, mangaTitle, chapterTitle, url) {
     return library.doc(userEmail).collection('manga').doc(mangaId).set({

@@ -1,8 +1,8 @@
-import 'dart:convert';
-
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:yomu_reader_1/page/screen/detail_screen.dart';
+
+import '../my_classes/services/firestore.dart';
 
 class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
@@ -12,63 +12,88 @@ class LibraryPage extends StatefulWidget {
 }
 
 class _LibraryPageState extends State<LibraryPage> {
-  postData() async {
-    try {
-      var response = await http.post(
-          Uri.parse(
-              "https://auth.mangadex.org/realms/mangadex/protocol/openid-connect/token"),
-          body: {
-            "grant_type": "password",
-            "username": "MrCrunchies",
-            "password": "Sdjj2015",
-            "client_id":
-                "personal-client-b2420d84-76e1-4feb-9b92-ac7e582d432b-baef788c",
-            "client_secret": "6TlYnf0oSNQQ2UObZIYRVOhIw2rPIhk0",
-          });
-      final body = response.body;
-      final json = jsonDecode(body);
-      final accessToken = json['access_token'];
-      final refreshToken = json['refresh_token'];
-      print("ACCESS TOKEN: " + accessToken);
-      print("REFRESH TOKEN: " + refreshToken);
-    } catch (e) {
-      print(e);
-    }
-  }
+
+  final FireStoreService fireStoreService = FireStoreService();
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
-          title: Text("Library"),
+          title: const Text("Library"),
         ),
         body: Padding(
-          padding: EdgeInsets.all(5.0),
-          child: GridView.builder(
-              addAutomaticKeepAlives: true,
-              shrinkWrap: false,
-              itemCount: 10,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 5,
-                childAspectRatio: 1 / 1.75,
-              ),
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: buildImage(),
+          padding: const EdgeInsets.all(5.0),
+          child: StreamBuilder(
+            stream: fireStoreService.getMangaLibrary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
-              }),
+              }
+              if (snapshot.data == null) {
+                return const Text("No Data");
+              }
+              final mangas = snapshot.data!.docs;
+
+              return GridView.builder(
+                  addAutomaticKeepAlives: true,
+                  shrinkWrap: false,
+                  itemCount: mangas.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 5,
+                    childAspectRatio: 1 / 1.75,
+                  ),
+                  itemBuilder: (context, index) {
+                    final manga = mangas[index];
+                    final mangaTitle = manga['manga_title'];
+                    final id = manga['manga_id'];
+                    final author = manga['manga_author'];
+                    final desc = manga['manga_description'];
+                    final status = manga['manga_status'];
+                    final cover = manga['cover_link'];
+                    return Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: buildImage(cover, mangaTitle, id, author, desc, status,index)
+                    );
+                  }
+              );
+            },
+
+          )
         ));
   }
 
-  Widget buildImage() {
+  Widget buildImage(cover, mangaTitle, id, author, desc, status,index) {
     return Column(
       children: [
-        Container(
-          height: 270,
-          color: Theme.of(context).colorScheme.primary,
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DetailScreen(
+                      title: mangaTitle,
+                      id: id,
+                      author: author,
+                      status: status,
+                      desc: desc,
+                      image: cover,
+                    )));
+          },
+          child: Container(
+            height: 270,
+            color: Theme.of(context).colorScheme.primary,
+            child: CachedNetworkImage(
+              imageUrl: cover,
+              fit: BoxFit.fill,
+              errorWidget: (BuildContext context, String url, dynamic error) =>
+              const Icon(Icons.error),
+            ),
+          ),
         ),
         const SizedBox(
           height: 10,
@@ -78,8 +103,8 @@ class _LibraryPageState extends State<LibraryPage> {
             children: [
               Expanded(
                   child: Text(
-                "One Piece",
-                style: TextStyle(fontSize: 12),
+                mangaTitle,
+                style: const TextStyle(fontSize: 12),
               ))
             ],
           ),

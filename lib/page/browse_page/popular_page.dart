@@ -50,7 +50,6 @@ class PopularPageState extends State<PopularPage> {
 
   void getTitles() async {
     mangaTitles[0] = widget.mangaId[0];
-    print(mangaTitles[0]);
   }
 
   @override
