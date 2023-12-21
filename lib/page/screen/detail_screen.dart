@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yomu_reader_1/components/description_text.dart';
@@ -36,12 +37,24 @@ class _DetailScreenState extends State<DetailScreen> {
   var numberOfAvailableChapter = 0;
   bool isLoading = true;
   bool isAddedToLibrary = false;
+  bool nagLoading = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => getChapterId());
     onLoad();
+    checKIfOpened();
+  }
+
+  checKIfOpened() async {
+    setState(() {
+      nagLoading = true;
+    });
+    isAddedToLibrary = await fireStoreService.isInLibrary(widget.id);
+    setState(() {
+      nagLoading = false;
+    });
   }
 
   void getChapterId() async {
@@ -91,6 +104,8 @@ class _DetailScreenState extends State<DetailScreen> {
       isLoading = false;
     });
   }
+
+  final FireStoreService fireStoreService = FireStoreService();
 
   @override
   Widget build(BuildContext context) {
@@ -226,65 +241,96 @@ class _DetailScreenState extends State<DetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Expanded(
-                          child: FilledButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Theme.of(context).colorScheme.primary),
-                              ),
-                              onPressed: () {
-                                final FireStoreService fireStoreService =
-                                    FireStoreService();
+                          child: StreamBuilder<
+                              DocumentSnapshot<Map<String, dynamic>>>(
+                        stream: fireStoreService.getCurrentChap(widget.id),
+                        builder: (context, snapshot) {
+                          Map<String, dynamic>? manga =
+                              snapshot.data!.data() as Map<String, dynamic>?;
+                          var naasHistory = false;
 
-                                if (!isAddedToLibrary) {
-                                  fireStoreService.addMangaToLibrary(
-                                      globals.email,
-                                      widget.id,
-                                      0,
-                                      revmangaChapter,
-                                      widget.author,
-                                      widget.desc,
-                                      widget.status,
-                                      widget.title,
-                                      "",
-                                      widget.image);
-                                  setState(() {
-                                    isAddedToLibrary = true;
-                                  });
-                                } else {
-                                  fireStoreService.removeMangaFromLibrary(
-                                      globals.email, widget.id);
-                                  setState(() {
-                                    isAddedToLibrary = false;
-                                  });
-                                }
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.all(6),
-                                child: Column(children: [
-                                  isAddedToLibrary
-                                      ? Icon(
-                                          Icons.favorite,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
-                                        )
-                                      : Icon(
-                                          Icons.favorite_border,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .inversePrimary,
-                                        ),
-                                  isAddedToLibrary
-                                      ? Text("Added To Library",
-                                          style: TextStyle(
-                                              color: Colors.grey, fontSize: 12))
-                                      : Text("Add to library",
-                                          style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 12)),
-                                ]),
-                              ))),
+                          if(snapshot.hasData) {
+                            naasHistory = true;
+                          } else {
+                            naasHistory = false;
+                          }
+
+                          return nagLoading
+                              ? Center(
+                                  child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 150,
+                                    ),
+                                    CircularProgressIndicator(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary,
+                                    ),
+                                  ],
+                                ))
+                              : FilledButton(
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all<
+                                            Color>(
+                                        Theme.of(context).colorScheme.primary),
+                                  ),
+                                  onPressed: () {
+                                    final FireStoreService fireStoreService =
+                                        FireStoreService();
+
+                                    if (!isAddedToLibrary) {
+                                      fireStoreService.addMangaToLibrary(
+                                          globals.email,
+                                          widget.id,
+                                          naasHistory ? 0:manga!['recent_chapter'],
+                                          revmangaChapter,
+                                          widget.author,
+                                          widget.desc,
+                                          widget.status,
+                                          widget.title,
+                                          "",
+                                          widget.image);
+                                      setState(() {
+                                        isAddedToLibrary = true;
+                                      });
+                                    } else {
+                                      fireStoreService.removeMangaFromLibrary(
+                                          globals.email, widget.id);
+                                      setState(() {
+                                        isAddedToLibrary = false;
+                                      });
+                                    }
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.all(6),
+                                    child: Column(children: [
+                                      isAddedToLibrary
+                                          ? Icon(
+                                              Icons.favorite,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary,
+                                            )
+                                          : Icon(
+                                              Icons.favorite_border,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .inversePrimary,
+                                            ),
+                                      isAddedToLibrary
+                                          ? Text("Added To Library",
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12))
+                                          : Text("Add to library",
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12)),
+                                    ]),
+                                  ));
+                        },
+                      )),
                     ],
                   ),
                   SizedBox(

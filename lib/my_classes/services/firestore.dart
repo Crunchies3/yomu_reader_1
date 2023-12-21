@@ -25,9 +25,25 @@ class FireStoreService {
     return history.doc(currentUser!.email).collection('manga').snapshots();
   }
 
+  Future<bool> isInLibrary(String mangaId) async{
+    try {
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      var doc = await library.doc(currentUser!.email).collection('manga').doc(mangaId).get();
+      return doc.exists;
+    } catch(e) {
+      return false;
+    }
+  }
+
   Stream<QuerySnapshot<Map<String, dynamic>>> getMangaLibrary()  {
     User? currentUser = FirebaseAuth.instance.currentUser;
     return library.doc(currentUser!.email).collection('manga').snapshots();
+  }
+  
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getCurrentChap(String mangaId) {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    final mangaStream = history.doc(currentUser!.email).collection('manga').doc(mangaId).snapshots();
+    return mangaStream;
   }
 
 
