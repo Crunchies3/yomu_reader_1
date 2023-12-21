@@ -96,11 +96,11 @@ class _LatestPageState extends State<LatestPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => DetailScreen(
-                      title: mangaTitle,
+                      title: mangaTitle == null? " " : mangaTitle,
                       id: id,
                       author: author,
                       status: status,
-                      desc: desc,
+                      desc: desc == null ? " " : desc,
                       image: cover,
                     )));
           },
@@ -123,7 +123,7 @@ class _LatestPageState extends State<LatestPage> {
             children: [
               Expanded(
                   child: Text(
-                    mangaTitle,
+                    mangaTitle == null? "Placeholder" : mangaTitle,
                     style: TextStyle(fontSize: 12),
                   ))
             ],

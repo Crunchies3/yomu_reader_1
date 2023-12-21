@@ -94,6 +94,7 @@ class _BrowsePageState extends State<BrowsePage>
         ...{
           "includedTags[]": included_tag_ids,
           "excludedTags[]": excluded_tag_ids,
+          "limit" : "50"
         },
         ...finalOrderQuery,
       }));
@@ -124,7 +125,7 @@ class _BrowsePageState extends State<BrowsePage>
       const String baseUrl = 'https://api.mangadex.org';
       final response = await http.get(
         Uri.parse('$baseUrl/manga').replace(queryParameters: {
-          ...{'ids[]': mangaIds, 'includes[]': include},
+          ...{'ids[]': mangaIds, 'includes[]': include,"limit" : "50"},
           ...finalOrderQuery
         }),
         headers: {'Content-Type': 'application/json'},
@@ -203,6 +204,7 @@ class _BrowsePageState extends State<BrowsePage>
         ...{
           "includedTags[]": included_tag_ids,
           "excludedTags[]": excluded_tag_ids,
+          "limit" : "50"
         },
         ...finalOrderQuery,
       }));
@@ -233,7 +235,7 @@ class _BrowsePageState extends State<BrowsePage>
       const String baseUrl = 'https://api.mangadex.org';
       final response = await http.get(
         Uri.parse('$baseUrl/manga').replace(queryParameters: {
-          ...{'ids[]': mangaIds, 'includes[]': include},
+          ...{'ids[]': mangaIds, 'includes[]': include, "limit" : "50"},
           ...finalOrderQuery
         }),
         headers: {'Content-Type': 'application/json'},
