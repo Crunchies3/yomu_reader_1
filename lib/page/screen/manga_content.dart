@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:yomu_reader_1/my_classes/services/firestore.dart';
 import 'package:yomu_reader_1/library/globals.dart' as globals;
@@ -36,6 +37,7 @@ class _MangaContentState extends State<MangaContent> {
   bool isLoading = true;
   int currentChap = 0;
   String chapterTitle = "";
+  bool isFabVisible = true;
 
   var hash = "";
   var baseUrl = "";
@@ -173,80 +175,101 @@ class _MangaContentState extends State<MangaContent> {
                   ),
                 )
               ],
-              body: ListView.builder(
-                  itemCount: pages.length,
-                  itemBuilder: (context, index) {
-                    final imageUrl = pages[index];
-                    return buildImage(imageUrl);
-                  }),
-            ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(left: 30),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Visibility(
-              visible: isFirst(),
-              child: FloatingActionButton(
-                onPressed: () {
-                  final FireStoreService fireStoreService =
-                  FireStoreService();
-                  setState(() {
+              body: NotificationListener<UserScrollNotification>(
+                onNotification: (notification) {
+                  if (notification.direction == ScrollDirection.forward) {
                     setState(() {
-                      var index = ++currentChap;
-                      refreshState(index);
-                      fireStoreService.addMangaToHistory(
-                        globals.email,
-                        widget.mangaId,
-                        index,
-                        widget.mangaChapters,
-                        widget.author,
-                        widget.desc,
-                        widget.status,
-                        widget.mangaTitle,
-                        chapterTitle,
-                        widget.image
-                      );
+                      isFabVisible = true;
                     });
-                  });
+                  } else if (notification.direction == ScrollDirection.reverse) {
+                    setState(() {
+                      isFabVisible = false;
+                    });
+                  }
+
+                  return true;
                 },
-                child: Icon(
-                  Icons.skip_previous,
-                  color: Theme.of(context).colorScheme.inversePrimary,
-                ),
+
+                child: ListView.builder(
+                    itemCount: pages.length,
+                    itemBuilder: (context, index) {
+                      final imageUrl = pages[index];
+                      return buildImage(imageUrl);
+                    }),
               ),
             ),
-            Expanded(child: Container()),
-            Visibility(
-              visible: isLatest(),
-              child: FloatingActionButton(
+      floatingActionButton: Visibility(
+        visible: isFabVisible,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 30),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Visibility(
+                visible: isFirst(),
+                child:  FloatingActionButton(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   onPressed: () {
                     final FireStoreService fireStoreService =
-                        FireStoreService();
+                    FireStoreService();
                     setState(() {
-                      var index = --currentChap;
-                      refreshState(index);
-
-                      fireStoreService.addMangaToHistory(
-                        globals.email,
-                        widget.mangaId,
-                        index,
-                        widget.mangaChapters,
-                        widget.author,
-                        widget.desc,
-                        widget.status,
-                        widget.mangaTitle,
-                        chapterTitle,
-                        widget.image
-                      );
+                      setState(() {
+                        var index = ++currentChap;
+                        refreshState(index);
+                        fireStoreService.addMangaToHistory(
+                          globals.email,
+                          widget.mangaId,
+                          index,
+                          widget.mangaChapters,
+                          widget.author,
+                          widget.desc,
+                          widget.status,
+                          widget.mangaTitle,
+                          chapterTitle,
+                          widget.image
+                        );
+                      });
                     });
                   },
                   child: Icon(
-                    Icons.skip_next,
-                    color: Theme.of(context).colorScheme.inversePrimary,
-                  )),
-            )
-          ],
+                    Icons.skip_previous,
+                    color: Theme.of(context).colorScheme.tertiary,
+                  ),
+                ),
+              ),
+              Expanded(child: Container()),
+              Visibility(
+                visible: isLatest(),
+                child: FloatingActionButton(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    onPressed: () {
+                      final FireStoreService fireStoreService =
+                          FireStoreService();
+                      setState(() {
+                        var index = --currentChap;
+                        refreshState(index);
+
+                        fireStoreService.addMangaToHistory(
+                          globals.email,
+                          widget.mangaId,
+                          index,
+                          widget.mangaChapters,
+                          widget.author,
+                          widget.desc,
+                          widget.status,
+                          widget.mangaTitle,
+                          chapterTitle,
+                          widget.image
+                        );
+                      });
+                    },
+                    child: Icon(
+                      Icons.skip_next,
+                      color: Theme.of(context).colorScheme.tertiary,
+                    )),
+              )
+            ],
+          ),
         ),
       ),
     );

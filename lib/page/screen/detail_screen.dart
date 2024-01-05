@@ -40,6 +40,7 @@ class _DetailScreenState extends State<DetailScreen> {
   bool nagLoading = true;
   var currChapter = 0;
   bool isInHistory = false;
+  bool isFabVisible = true;
 
   @override
   void initState() {
