@@ -12,9 +12,8 @@ class LibraryPage extends StatefulWidget {
 }
 
 class _LibraryPageState extends State<LibraryPage> {
-
   final FireStoreService fireStoreService = FireStoreService();
-
+  bool isLibraryEmpty = true;
 
   @override
   Widget build(BuildContext context) {
@@ -24,50 +23,76 @@ class _LibraryPageState extends State<LibraryPage> {
           title: const Text("Library"),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: StreamBuilder(
-            stream: fireStoreService.getMangaLibrary(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if (snapshot.data == null) {
-                return const Text("No Data");
-              }
-              final mangas = snapshot.data!.docs;
+            padding: const EdgeInsets.all(5.0),
+            child: StreamBuilder(
+              stream: fireStoreService.getMangaLibrary(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (snapshot.data == null) {
+                  return const Text("No Data");
+                }
+                final mangas = snapshot.data!.docs;
 
-              return GridView.builder(
-                  addAutomaticKeepAlives: true,
-                  shrinkWrap: false,
-                  itemCount: mangas.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 5,
-                    childAspectRatio: 1 / 1.75,
-                  ),
-                  itemBuilder: (context, index) {
-                    final manga = mangas[index];
-                    final mangaTitle = manga['manga_title'];
-                    final id = manga['manga_id'];
-                    final author = manga['manga_author'];
-                    final desc = manga['manga_description'];
-                    final status = manga['manga_status'];
-                    final cover = manga['cover_link'];
-                    return Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: buildImage(cover, mangaTitle, id, author, desc, status,index)
-                    );
-                  }
-              );
-            },
+                if (mangas.length > 0) {
+                  isLibraryEmpty = false;
+                } else {
+                  isLibraryEmpty = true;
+                }
 
-          )
-        ));
+                return isLibraryEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.dashboard_outlined,
+                              size: 70,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              "Your library is empty",
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                            ),
+                          ],
+                        ),
+                      )
+                    : GridView.builder(
+                        addAutomaticKeepAlives: true,
+                        shrinkWrap: false,
+                        itemCount: mangas.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 5,
+                          childAspectRatio: 1 / 1.75,
+                        ),
+                        itemBuilder: (context, index) {
+                          final manga = mangas[index];
+                          final mangaTitle = manga['manga_title'];
+                          final id = manga['manga_id'];
+                          final author = manga['manga_author'];
+                          final desc = manga['manga_description'];
+                          final status = manga['manga_status'];
+                          final cover = manga['cover_link'];
+                          return Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: buildImage(cover, mangaTitle, id, author,
+                                  desc, status, index));
+                        });
+              },
+            )));
   }
 
-  Widget buildImage(cover, mangaTitle, id, author, desc, status,index) {
+  Widget buildImage(cover, mangaTitle, id, author, desc, status, index) {
     return Column(
       children: [
         GestureDetector(
@@ -76,13 +101,13 @@ class _LibraryPageState extends State<LibraryPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => DetailScreen(
-                      title: mangaTitle,
-                      id: id,
-                      author: author,
-                      status: status,
-                      desc: desc,
-                      image: cover,
-                    )));
+                          title: mangaTitle,
+                          id: id,
+                          author: author,
+                          status: status,
+                          desc: desc,
+                          image: cover,
+                        )));
           },
           child: Container(
             height: 270,
@@ -91,7 +116,7 @@ class _LibraryPageState extends State<LibraryPage> {
               imageUrl: cover,
               fit: BoxFit.fill,
               errorWidget: (BuildContext context, String url, dynamic error) =>
-              const Icon(Icons.error),
+                  const Icon(Icons.error),
             ),
           ),
         ),

@@ -13,6 +13,7 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   final FireStoreService fireStoreService = FireStoreService();
+  bool isHistoryEmpty = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,60 +37,88 @@ class _HistoryPageState extends State<HistoryPage> {
 
                 final mangas = snapshot.data!.docs;
 
-                return ListView.builder(
-                  itemCount: mangas.length,
-                  itemBuilder: (context, index) {
-                    final manga = mangas[index];
+                if (mangas.length > 0) {
+                  isHistoryEmpty = false;
+                } else {
+                  isHistoryEmpty = true;
+                }
 
-                    return ListTile(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MangaContent(
-                                mangaId: manga['manga_id'],
-                                mangaTitle: manga['manga_title'],
-                                mangaChapters: manga['chapter_ids'],
-                                index: manga['recent_chapter'],
-                                author: manga['manga_author'],
-                                status: manga['manga_status'],
-                                desc: manga['manga_description'],
-                                image: manga['cover_link'],
-                              )
-                          )
-                        );
-                      },
-                      leading: Container(
-                          color: Theme.of(context).colorScheme.primary,
-                          height: 100,
-                          width: 40,
-                          child: GestureDetector(
+                return isHistoryEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.history,
+                              size: 70,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              "Nothing read lately",
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: mangas.length,
+                        itemBuilder: (context, index) {
+                          final manga = mangas[index];
+
+                          return ListTile(
                             onTap: () {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => DetailScreen(
-                                            title: manga['manga_title'],
-                                            id: manga['manga_id'],
+                                      builder: (context) => MangaContent(
+                                            mangaId: manga['manga_id'],
+                                            mangaTitle: manga['manga_title'],
+                                            mangaChapters: manga['chapter_ids'],
+                                            index: manga['recent_chapter'],
                                             author: manga['manga_author'],
                                             status: manga['manga_status'],
                                             desc: manga['manga_description'],
                                             image: manga['cover_link'],
                                           )));
                             },
-                            child: Image.network(
-                              manga['cover_link'],
-                              fit: BoxFit.fill,
+                            leading: Container(
+                                color: Theme.of(context).colorScheme.primary,
+                                height: 100,
+                                width: 40,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => DetailScreen(
+                                                  title: manga['manga_title'],
+                                                  id: manga['manga_id'],
+                                                  author: manga['manga_author'],
+                                                  status: manga['manga_status'],
+                                                  desc: manga[
+                                                      'manga_description'],
+                                                  image: manga['cover_link'],
+                                                )));
+                                  },
+                                  child: Image.network(
+                                    manga['cover_link'],
+                                    fit: BoxFit.fill,
+                                  ),
+                                )),
+                            title: Text(manga['manga_title']),
+                            subtitle: Text(
+                              manga['chapter_title'],
+                              style: TextStyle(
+                                  fontSize: 11, color: Colors.grey[400]),
                             ),
-                          )),
-                      title: Text(manga['manga_title']),
-                      subtitle: Text(
-                        manga['chapter_title'],
-                        style: TextStyle(fontSize: 11, color: Colors.grey[400]),
-                      ),
-                    );
-                  },
-                );
+                          );
+                        },
+                      );
               },
             )));
   }
