@@ -442,7 +442,6 @@ class _BrowsePageState extends State<BrowsePage>
                 });
               },
               icon: cusIcon),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.filter_list)),
           IconButton(onPressed: () {}, icon: const Icon(Icons.grid_view_sharp)),
         ],
       ),

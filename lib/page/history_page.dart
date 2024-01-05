@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yomu_reader_1/my_classes/services/firestore.dart';
 import 'package:yomu_reader_1/page/screen/detail_screen.dart';
 import 'package:yomu_reader_1/page/screen/manga_content.dart';

@@ -100,13 +100,12 @@ class _LibraryPageState extends State<LibraryPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => DetailScreen(
-                                              title: manga['manga_title'],
-                                              id: manga['manga_id'],
-                                              author: manga['manga_author'],
-                                              status: manga['manga_status'],
-                                              desc: manga[
-                                              'manga_description'],
-                                              image: manga['cover_link'],
+                                              title: mangaTitle,
+                                              id: id,
+                                              author: author,
+                                              status: status,
+                                              desc: desc,
+                                              image: cover,
                                             )));
                                   },
                                   leading: Container(
