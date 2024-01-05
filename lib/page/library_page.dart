@@ -14,6 +14,7 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage> {
   final FireStoreService fireStoreService = FireStoreService();
   bool isLibraryEmpty = true;
+  bool isList = false;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +22,21 @@ class _LibraryPageState extends State<LibraryPage> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
           title: const Text("Library"),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  if (isList) {
+                    setState(() {
+                      isList = false;
+                    });
+                  } else {
+                    setState(() {
+                      isList = true;
+                    });
+                  }
+                },
+                icon: isList ? Icon(Icons.grid_view_sharp) : Icon(Icons.list)),
+          ],
         ),
         body: Padding(
             padding: const EdgeInsets.all(5.0),
@@ -65,29 +81,71 @@ class _LibraryPageState extends State<LibraryPage> {
                           ],
                         ),
                       )
-                    : GridView.builder(
-                        addAutomaticKeepAlives: true,
-                        shrinkWrap: false,
-                        itemCount: mangas.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 5,
-                          childAspectRatio: 1 / 1.75,
-                        ),
-                        itemBuilder: (context, index) {
-                          final manga = mangas[index];
-                          final mangaTitle = manga['manga_title'];
-                          final id = manga['manga_id'];
-                          final author = manga['manga_author'];
-                          final desc = manga['manga_description'];
-                          final status = manga['manga_status'];
-                          final cover = manga['cover_link'];
-                          return Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: buildImage(cover, mangaTitle, id, author,
-                                  desc, status, index));
-                        });
+                    : isList
+                        ? Padding(
+                          padding:  EdgeInsets.all(5.0),
+                          child: ListView.builder(
+                              itemCount: mangas.length,
+                              itemBuilder: (context, index) {
+                                final manga = mangas[index];
+                                final mangaTitle = manga['manga_title'];
+                                final id = manga['manga_id'];
+                                final author = manga['manga_author'];
+                                final desc = manga['manga_description'];
+                                final status = manga['manga_status'];
+                                final cover = manga['cover_link'];
+                                return ListTile(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => DetailScreen(
+                                              title: manga['manga_title'],
+                                              id: manga['manga_id'],
+                                              author: manga['manga_author'],
+                                              status: manga['manga_status'],
+                                              desc: manga[
+                                              'manga_description'],
+                                              image: manga['cover_link'],
+                                            )));
+                                  },
+                                  leading: Container(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    height: 100,
+                                    width: 40,
+                                    child: Image.network(
+                                      cover,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  title: Text(mangaTitle),
+                                  subtitle: Text(""),
+                                );
+                              }),
+                        )
+                        : GridView.builder(
+                            addAutomaticKeepAlives: true,
+                            shrinkWrap: false,
+                            itemCount: mangas.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 5,
+                              childAspectRatio: 1 / 1.75,
+                            ),
+                            itemBuilder: (context, index) {
+                              final manga = mangas[index];
+                              final mangaTitle = manga['manga_title'];
+                              final id = manga['manga_id'];
+                              final author = manga['manga_author'];
+                              final desc = manga['manga_description'];
+                              final status = manga['manga_status'];
+                              final cover = manga['cover_link'];
+                              return Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: buildImage(cover, mangaTitle, id,
+                                      author, desc, status, index));
+                            });
               },
             )));
   }
